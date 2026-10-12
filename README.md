@@ -10,7 +10,7 @@
 
 ---
 
-## 🏥 Platform Overview & Purpose
+## Platform Overview & Purpose
 
 Millions of Nigerians face barriers in accessing primary healthcare due to language mismatch, high emergency room congestion, and low physician density. AfyaVoice allows patients to submit health complaints using their own voice or text messages.
 
@@ -20,7 +20,7 @@ Millions of Nigerians face barriers in accessing primary healthcare due to langu
 
 ---
 
-## 🏛️ System Architecture
+## System Architecture
 
 ```
 [ Patient Voice Note / Text ]
@@ -48,7 +48,7 @@ Millions of Nigerians face barriers in accessing primary healthcare due to langu
 
 ---
 
-## 🌟 Core Features & Subsystems
+## Core Features & Subsystems
 
 ### 1. Conversational Audio Ingestion Engine
 * Integrates directly with Meta's **WhatsApp Cloud API (v25.0)**.
@@ -131,7 +131,7 @@ Afya voice/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Prerequisites
 * **Python 3.11+** installed.
@@ -182,7 +182,7 @@ NATLAS_LLM_ENDPOINT="https://api-inference.huggingface.co/models/NCAIR1/N-ATLaS/
 
 ---
 
-## 🏃 Running the Application
+## Running the Application
 
 ### Start the AfyaVoice Backend
 ```bash
@@ -192,7 +192,7 @@ The server will start at **`http://localhost:8000`**.
 
 ### Access the Web Telemedicine Portal & Simulator
 Open your browser and navigate to:
-👉 **[http://localhost:8000/portal](http://localhost:8000/portal)**
+ **[http://localhost:8000/portal](http://localhost:8000/portal)**
 
 * Click the **Microphone** button to speak a voice note into your laptop.
 * Or use the **Text Message** tab to type symptoms in English, Yoruba, Hausa, Igbo, or Pidgin.
@@ -219,7 +219,7 @@ To connect real WhatsApp traffic to your local server:
 
 ---
 
-## 📜 Clinical & Ethical Disclaimers
+## Clinical & Ethical Disclaimers
 * AfyaVoice is a **Clinical Decision Support & Triage Tool** designed to assist healthcare workers and prioritize patient queues. It does **not** provide final medical diagnoses or prescribe controlled medications autonomously.
 * All high-urgency **RED** cases mandate immediate physical escalation to an accredited Nigerian Emergency Department.
 * Built in alignment with **Medical and Dental Council of Nigeria (MDCN)** telemedicine ethical guidelines.
