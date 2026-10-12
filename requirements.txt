@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+pydantic-settings
+psycopg[binary]
+redis
+httpx
+pydub
+python-dotenv
+audioop-lts
+python-multipart

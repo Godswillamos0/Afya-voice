@@ -1,0 +1,63 @@
+{
+  "protocol_version": "MTS-V3.2-MDCN",
+  "name": "Manchester Triage System Discriminator Matrix for Telemedicine",
+  "tiers": {
+    "RED": {
+      "priority_level": 1,
+      "urgency_label": "RED - EMERGENCY",
+      "max_time_to_treatment_mins": 0,
+      "description": "Immediate life-threatening conditions requiring emergency hospital stabilization.",
+      "clinical_action": "Proceed to the nearest Emergency Center immediately or dial Nigeria Emergency (112).",
+      "discriminators": [
+        "AIRWAY_COMPROMISE",
+        "INADEQUATE_BREATHING",
+        "EXSANGUINATING_HEMORRHAGE",
+        "UNRESPONSIVENESS",
+        "ACTIVE_CONVULSION",
+        "CARDIAC_CHEST_PAIN",
+        "ACUTE_STROKE_SYMPTOMS"
+      ]
+    },
+    "YELLOW": {
+      "priority_level": 2,
+      "urgency_label": "YELLOW - URGENT",
+      "max_time_to_treatment_mins": 60,
+      "description": "Potentially serious conditions requiring clinical assessment within 12-24 hours.",
+      "clinical_action": "Visit a registered Primary Health Care (PHC) center or hospital within 12-24 hours.",
+      "discriminators": [
+        "HIGH_FEVER_PERSISTENT",
+        "SEVERE_ABDOMINAL_PAIN",
+        "PERSISTENT_VOMITING_DEHYDRATION",
+        "SEVERE_HEADACHE_STIFF_NECK",
+        "REDUCED_FETAL_MOVEMENT",
+        "SIGNIFICANT_TRAUMA_FRACTURE",
+        "SEVERE_PAIN"
+      ]
+    },
+    "GREEN": {
+      "priority_level": 3,
+      "urgency_label": "GREEN - ROUTINE",
+      "max_time_to_treatment_mins": 120,
+      "description": "Mild, early, or self-limiting conditions suitable for outpatient dispensary or telemedicine care.",
+      "clinical_action": "Consult a primary healthcare worker or schedule a routine outpatient appointment.",
+      "discriminators": [
+        "MILD_UPPER_RESPIRATORY_TRACT",
+        "MILD_HEADACHE",
+        "GENERAL_MALAISE",
+        "MINOR_ACHES_AND_PAINS",
+        "SUPERFICIAL_INJURY"
+      ]
+    },
+    "WHITE": {
+      "priority_level": 4,
+      "urgency_label": "WHITE - SELF_CARE",
+      "max_time_to_treatment_mins": 240,
+      "description": "Minor complaints suitable for home self-care, rest, and hydration.",
+      "clinical_action": "Maintain adequate hydration, get plenty of rest, and monitor symptoms over 48 hours.",
+      "discriminators": [
+        "CHRONIC_MILD_SYMPTOM",
+        "WELLNESS_QUERY"
+      ]
+    }
+  }
+}

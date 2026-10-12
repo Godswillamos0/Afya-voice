@@ -1,0 +1,39 @@
+# Python virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Environment Variables & Secrets (CRITICAL)
+.env
+.env.local
+*.env
+
+# SQLite Databases & Local Storage
+*.db
+*.sqlite
+*.sqlite3
+*.log
+storage/
+storage/audio/
+storage/temp_uploads/
+
+# Executables & Binaries
+cloudflared.exe
+*.exe
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor folders
+.vscode/
+.idea/
+*.swp
