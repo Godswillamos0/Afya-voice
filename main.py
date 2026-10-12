@@ -46,6 +46,13 @@ def health_check():
 # Import and include routers
 from api.webhooks.whatsapp import router as whatsapp_router
 from api.portal.routes import router as portal_router
+from api.portal.landing import landing_router
+
+# Register the Landing Page router
+app.include_router(
+    landing_router,
+    tags=["Landing"]
+)
 
 # Register the WhatsApp Webhook router
 app.include_router(

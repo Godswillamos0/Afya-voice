@@ -32,941 +32,798 @@ class TextTriageRequest(BaseModel):
 
 @router.get("/portal", response_class=HTMLResponse)
 def get_portal_ui():
-    """Serves the authentic AfyaVoice Sovereign Telemedicine Portal & Clinical Triage Interface."""
+    """Serves the clean, human-centered AfyaVoice Telemedicine Portal & Clinical Triage Interface."""
     html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AfyaVoice - Dedicated Voice-First Clinical Triage</title>
+  <title>AfyaVoice - Clinical Symptom Triage Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #edf7f2;
+      --bg: #f8fafc;
       --card-bg: #ffffff;
-      --border-color: #d1e7dd;
-      --primary-dark: #064e3b;
-      --primary: #0d6045;
-      --primary-hover: #0a4d37;
-      --primary-light: #e6f6ee;
-      --accent-mint: #d1fae5;
-      --accent-mint-text: #065f46;
-      --text-main: #13271f;
-      --text-muted: #526b60;
-      --text-light: #7c988d;
-      --danger-bg: #fee2e2;
+      --border: #e2e8f0;
+      --border-focus: #0f766e;
+      --primary: #0f766e;
+      --primary-hover: #0d9488;
+      --primary-light: #f0fdfa;
+      --primary-subtle: #ccfbf1;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-light: #94a3b8;
+      --danger-bg: #fef2f2;
       --danger-text: #991b1b;
       --danger-border: #fecaca;
-      --warning-bg: #fef3c7;
+      --warning-bg: #fffbeb;
       --warning-text: #92400e;
-      --shadow-sm: 0 1px 3px rgba(13, 96, 69, 0.05);
-      --shadow-md: 0 4px 14px rgba(13, 96, 69, 0.08);
+      --warning-border: #fde68a;
+      --success-bg: #f0fdf4;
+      --success-text: #166534;
+      --success-border: #bbf7d0;
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 14px -2px rgba(15, 118, 110, 0.08);
+      --shadow-lg: 0 12px 28px -4px rgba(15, 118, 110, 0.12);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text-main);
+      line-height: 1.5;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      line-height: 1.5;
     }
 
-    /* TOP GLOBAL NAVBAR */
-    .top-nav {
+    /* TOP HEADER */
+    header {
       background: #ffffff;
-      border-bottom: 1px solid var(--border-color);
-      padding: 0.65rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
       display: flex;
       justify-content: space-between;
       align-items: center;
       box-shadow: var(--shadow-sm);
     }
-    .brand-section { display: flex; align-items: center; gap: 0.85rem; }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-main);
+    }
     .brand-logo-icon {
       width: 38px;
       height: 38px;
-      background: var(--primary);
       border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
       font-weight: 800;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
     }
-    .brand-text h1 { font-size: 1.25rem; font-weight: 800; color: var(--primary-dark); line-height: 1.1; }
-    .brand-text span { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
-    
-    .status-badge-active {
-      background: var(--primary-light);
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: 800;
       color: var(--primary);
-      font-weight: 700;
-      font-size: 0.78rem;
-      padding: 0.35rem 0.75rem;
-      border-radius: 9999px;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      border: 1px solid var(--border-color);
+      line-height: 1.1;
     }
-    .dot-live { width: 7px; height: 7px; border-radius: 50%; background: #10b981; animation: blink 1.6s infinite; }
-    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-    .nav-links { display: flex; align-items: center; gap: 0.4rem; }
-    .nav-tab {
-      background: transparent;
-      border: none;
-      font-family: inherit;
-      font-size: 0.88rem;
+    .brand-subtitle {
+      font-size: 0.72rem;
       font-weight: 600;
       color: var(--text-muted);
-      padding: 0.5rem 0.95rem;
-      border-radius: 10px;
-      cursor: pointer;
+    }
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .back-home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
       transition: all 0.15s;
     }
-    .nav-tab:hover { background: var(--primary-light); color: var(--primary-dark); }
-    .nav-tab.active { background: var(--primary); color: #ffffff; }
-
-    .nav-right { display: flex; align-items: center; gap: 1rem; }
-    .emergency-pill {
+    .back-home-link:hover {
+      background: #f1f5f9;
+      color: var(--primary);
+    }
+    .emergency-hotline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
       background: var(--danger-bg);
       color: var(--danger-text);
       border: 1px solid var(--danger-border);
-      padding: 0.35rem 0.75rem;
+      padding: 0.35rem 0.85rem;
       border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-    .lang-selector {
-      background: #f8fafc;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 0.35rem 0.65rem;
       font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
-    }
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding-left: 0.5rem;
-      border-left: 1px solid var(--border-color);
-    }
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #0284c7;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-weight: 700;
-      font-size: 0.85rem;
-    }
-    .user-info { text-align: right; line-height: 1.15; }
-    .user-phone { font-size: 0.8rem; font-weight: 700; color: var(--text-main); }
-    .user-tag { font-size: 0.68rem; color: #059669; font-weight: 700; }
-
-    /* TELEMETRY BANNER */
-    .telemetry-bar {
-      background: #e3f2ea;
-      border-bottom: 1px solid var(--border-color);
-      padding: 0.45rem 1.75rem;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1.25rem;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-    .telemetry-item { display: flex; align-items: center; gap: 0.4rem; }
-    .telemetry-pill {
-      background: #ffffff;
-      padding: 0.15rem 0.55rem;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      color: var(--primary-dark);
-      font-weight: 700;
+      text-decoration: none;
     }
 
-    /* MAIN CONTAINER LAYOUT */
-    .main-wrapper {
-      max-width: 1360px;
-      margin: 1.5rem auto;
+    /* MAIN LAYOUT */
+    .portal-container {
+      max-width: 1200px;
+      margin: 2rem auto;
       padding: 0 1.5rem;
       width: 100%;
       display: grid;
-      grid-template-columns: 1.85fr 1fr;
-      gap: 1.5rem;
+      grid-template-columns: 1.8fr 1fr;
+      gap: 2rem;
       flex: 1;
     }
-    @media (max-width: 1024px) { .main-wrapper { grid-template-columns: 1fr; } }
+    @media (max-width: 992px) {
+      .portal-container {
+        grid-template-columns: 1fr;
+        margin: 1.25rem auto;
+      }
+    }
 
-    /* WHITE CARDS */
-    .card {
+    /* FORM CARD */
+    .main-card {
       background: var(--card-bg);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.5rem;
+      padding: 2rem;
       box-shadow: var(--shadow-sm);
     }
-
-    /* LEFT COLUMN HEADER */
-    .triage-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
+    .portal-heading-row {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
     }
-    .pill-session {
-      background: var(--accent-mint);
-      color: var(--accent-mint-text);
-      font-size: 0.75rem;
+    .portal-heading {
+      font-size: 1.55rem;
       font-weight: 800;
-      padding: 0.25rem 0.65rem;
-      border-radius: 9999px;
-      letter-spacing: 0.04em;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
     }
-    .ticket-id { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); margin-left: 0.4rem; }
-    
-    .speed-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      background: #f1f5f9;
-      padding: 0.2rem 0.35rem;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
+    .portal-subheading {
+      font-size: 0.95rem;
       color: var(--text-muted);
     }
-    .speed-btn {
-      background: #ffffff;
-      border: 1px solid #cbd5e1;
-      padding: 0.15rem 0.45rem;
-      border-radius: 5px;
-      cursor: pointer;
+
+    /* STEP 1: LANGUAGE SELECTION */
+    .step-section {
+      margin-bottom: 1.85rem;
+    }
+    .step-label {
+      font-size: 0.88rem;
       font-weight: 700;
       color: var(--text-main);
-    }
-
-    .page-title {
-      font-size: 1.45rem;
-      font-weight: 800;
-      color: var(--primary-dark);
-      letter-spacing: -0.02em;
-      margin-bottom: 1.25rem;
-    }
-
-    /* DIALECT SELECTOR */
-    .dialect-label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-    }
-    .dialect-group {
+      margin-bottom: 0.65rem;
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .dialect-chip {
-      background: #f8fafc;
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      font-family: inherit;
-      font-size: 0.85rem;
-      font-weight: 700;
-      padding: 0.45rem 1rem;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .dialect-chip:hover { border-color: var(--primary); color: var(--primary); }
-    .dialect-chip.selected {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #ffffff;
-    }
-
-    /* PATIENT VOICE PLAYBACK CARD */
-    .voice-call-card {
-      background: #f9fbf9;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      margin-bottom: 1.25rem;
-    }
-    .caller-header {
-      display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      gap: 0.5rem;
     }
-    .caller-meta { display: flex; align-items: center; gap: 0.75rem; }
-    .caller-icon {
-      width: 40px;
-      height: 40px;
+    .step-num-badge {
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       background: var(--primary-light);
       color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-    }
-    .caller-name { font-size: 0.95rem; font-weight: 800; color: var(--text-main); }
-    .caller-time { font-size: 0.75rem; color: var(--text-light); }
-    .tag-call-source {
-      background: #e2e8f0;
-      color: #475569;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.15rem 0.5rem;
-      border-radius: 4px;
-      margin-left: 0.4rem;
-    }
-    .audio-length-badge {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 700;
-      background: #d1fae5;
-      color: #065f46;
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
-    }
-
-    /* CUSTOM AUDIO PLAYER / RECORDER */
-    .player-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 0.75rem 1rem;
-      margin-bottom: 1rem;
-    }
-    .play-btn-circle {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1rem;
-      flex-shrink: 0;
-      transition: transform 0.15s;
-    }
-    .play-btn-circle:hover { background: var(--primary-hover); transform: scale(1.05); }
-    
-    .wave-bars {
-      flex: 1;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .wave-bar {
-      width: 3px;
-      background: #94a3b8;
-      border-radius: 2px;
-      height: 8px;
-    }
-    .wave-bar.active { background: var(--primary); height: 22px; }
-    .wave-bar:nth-child(2) { height: 14px; }
-    .wave-bar:nth-child(3) { height: 24px; background: var(--primary); }
-    .wave-bar:nth-child(4) { height: 18px; background: var(--primary); }
-    .wave-bar:nth-child(5) { height: 12px; }
-    .wave-bar:nth-child(6) { height: 20px; background: var(--primary); }
-    .wave-bar:nth-child(7) { height: 26px; background: var(--primary); }
-    .wave-bar:nth-child(8) { height: 16px; }
-    .wave-bar:nth-child(9) { height: 10px; }
-    .wave-bar:nth-child(10) { height: 22px; background: var(--primary); }
-
-    .player-timestamp {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    /* TRANSCRIPT CONTAINER */
-    .transcript-box {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 1rem 1.15rem;
-    }
-    .transcript-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-    .transcript-label {
       font-size: 0.75rem;
       font-weight: 800;
-      color: var(--primary);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .btn-toggle-trans {
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .transcript-text {
-      font-size: 0.95rem;
-      color: var(--text-main);
-      font-style: italic;
-      line-height: 1.55;
-    }
-    .translation-subtext {
-      margin-top: 0.65rem;
-      padding-top: 0.65rem;
-      border-top: 1px dashed var(--border-color);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-style: normal;
-    }
-
-    /* ACTION & LIVE CONSULTATION CONTROLS */
-    .interactive-panel {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 1.25rem;
-      margin-top: 1.25rem;
-    }
-    .tabs-row { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-    .tab-toggle-btn {
-      background: #f1f5f9;
-      border: 1px solid transparent;
-      padding: 0.45rem 0.85rem;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-    .tab-toggle-btn.active {
-      background: var(--primary);
-      color: #fff;
-    }
-    .record-controls {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem;
-      background: #f8fafc;
-      border: 1px dashed var(--border-color);
-      border-radius: 12px;
-      margin-bottom: 1rem;
-    }
-    .btn-mic-round {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--primary);
-      border: none;
-      color: #fff;
-      font-size: 1.2rem;
-      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
     }
-    .btn-mic-round.recording { background: var(--danger-text); animation: pulse 1s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.85; transform: scale(1.08); } }
-    
-    .input-field {
-      width: 100%;
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+    .lang-chips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.65rem;
+    }
+    .lang-chip {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 0.65rem 0.85rem;
       font-family: inherit;
-      font-size: 0.88rem;
-      color: var(--text-main);
-      margin-bottom: 0.85rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
     }
-    .input-field:focus { outline: none; border-color: var(--primary); }
-    textarea.input-field { min-height: 80px; resize: vertical; }
+    .lang-chip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+    }
+    .lang-chip.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.2);
+    }
 
+    /* STEP 2: SYMPTOM INPUT */
+    .tab-switch {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 0.25rem;
+      margin-bottom: 1rem;
+      gap: 0.25rem;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* VOICE RECORDER BOX */
+    .voice-recorder-card {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .voice-recorder-card.recording {
+      border-color: #ef4444;
+      background: #fff5f5;
+    }
+    .mic-button {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
+    }
+    .mic-button:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+    .mic-button.recording {
+      background: #dc2626;
+      animation: mic-pulse 1.2s infinite;
+    }
+    @keyframes mic-pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5); }
+      50% { transform: scale(1.08); box-shadow: 0 0 0 12px rgba(220, 38, 38, 0); }
+    }
+    .mic-status-title {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--text-main);
+      margin-bottom: 0.35rem;
+    }
+    .mic-status-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .audio-upload-alt {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* TEXT INPUT */
+    .symptom-textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 0.85rem 1rem;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      resize: vertical;
+      line-height: 1.5;
+      transition: border-color 0.15s;
+    }
+    .symptom-textarea:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+    .quick-symptom-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.75rem;
+    }
+    .tag-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tag-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary-subtle);
+      color: var(--primary);
+    }
+
+    /* PHONE INPUT */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.45rem;
+      display: block;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      transition: border-color 0.15s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    /* SUBMIT BUTTON */
     .btn-submit-triage {
       width: 100%;
       background: var(--primary);
       color: #ffffff;
       border: none;
-      padding: 0.85rem;
-      border-radius: 10px;
-      font-size: 0.95rem;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1.05rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      box-shadow: 0 2px 8px rgba(13, 96, 69, 0.2);
+      gap: 0.65rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
     }
-    .btn-submit-triage:hover { background: var(--primary-hover); }
+    .btn-submit-triage:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+    .btn-submit-triage:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-    /* RIGHT COLUMN: CITIZEN RECORD & GUARDRAILS */
-    .sidebar-col { display: flex; flex-direction: column; gap: 1.25rem; }
-    
-    .citizen-card {
+    /* RESULTS CARD */
+    .results-card {
+      display: none;
       background: #ffffff;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.5rem;
+      padding: 1.75rem;
+      margin-top: 2rem;
+      box-shadow: var(--shadow-md);
+      animation: fadeIn 0.3s ease-in-out;
     }
-    .citizen-card-head {
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .result-banner {
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       margin-bottom: 1.25rem;
     }
-    .label-meta-title { font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-    .badge-synced {
-      background: #e0f2fe;
-      color: #0369a1;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
+    .result-banner.red { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger-text); }
+    .result-banner.yellow { background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning-text); }
+    .result-banner.green { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--success-text); }
+    .result-banner-title { font-size: 1.15rem; font-weight: 800; }
+    .result-banner-pill {
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.9);
     }
-    .citizen-profile-row {
-      display: flex;
-      align-items: center;
+
+    .findings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
       margin-bottom: 1.25rem;
     }
-    .citizen-avatar-box {
-      width: 58px;
-      height: 58px;
-      border-radius: 12px;
-      background: #0d9488;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 1.4rem;
-      flex-shrink: 0;
-    }
-    .citizen-title-name { font-size: 1.15rem; font-weight: 800; color: var(--text-main); line-height: 1.2; }
-    .citizen-location { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
-    .citizen-gsm { font-size: 0.78rem; color: var(--primary); font-weight: 700; margin-top: 0.15rem; }
-
-    .quota-box {
-      background: var(--primary-light);
-      border: 1px solid var(--border-color);
+    @media (max-width: 640px) { .findings-grid { grid-template-columns: 1fr; } }
+    .finding-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
       border-radius: 10px;
       padding: 0.85rem 1rem;
     }
-    .quota-header-row { display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 0.4rem; }
-    .progress-bar-bg { width: 100%; height: 6px; background: #c6e6d6; border-radius: 4px; overflow: hidden; margin-bottom: 0.4rem; }
-    .progress-fill { width: 65%; height: 100%; background: var(--primary); }
-    .quota-footer-row { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
-    .quota-highlight { color: #b91c1c; font-weight: 800; }
-
-    /* GUARDRAILS CARD */
-    .guardrails-card {
-      background: #ffffff;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
+    .finding-label { font-size: 0.72rem; font-weight: 800; color: var(--text-light); text-transform: uppercase; margin-bottom: 0.25rem; }
+    .finding-value { font-size: 0.95rem; font-weight: 700; color: var(--text-main); }
+    .snomed-badge {
+      grid-column: span 2;
+      background: var(--primary-light);
+      border: 1px solid var(--primary-subtle);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
     }
-    .guardrails-title {
+    @media (max-width: 640px) { .snomed-badge { grid-column: span 1; } }
+
+    .care-instructions-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: #334155;
+      white-space: pre-wrap;
+    }
+    .whatsapp-confirm-pill {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--primary-dark);
-      margin-bottom: 0.5rem;
+      font-size: 0.82rem;
+      color: #166534;
+      background: #dcfce7;
+      padding: 0.55rem 0.95rem;
+      border-radius: 8px;
+      font-weight: 700;
     }
-    .guardrails-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 1rem; }
-    
-    .protocol-box {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: 10px;
-      padding: 0.85rem;
-      margin-bottom: 0.75rem;
-    }
-    .protocol-title { font-size: 0.82rem; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 0.35rem; }
-    .protocol-desc { font-size: 0.75rem; color: #374151; margin-top: 0.2rem; }
 
-    /* LIVE RESULTS MODAL / CARD */
-    .triage-output-card {
-      display: none;
+    /* RIGHT SIDEBAR */
+    .sidebar-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .info-card {
       background: #ffffff;
-      border: 2px solid var(--primary);
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.25rem;
-      margin-top: 1.25rem;
-      box-shadow: var(--shadow-md);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
     }
-    .badge-tier-red { background: var(--danger-bg); color: var(--danger-text); border: 1px solid var(--danger-border); }
-    .badge-tier-yellow { background: var(--warning-bg); color: var(--warning-text); border: 1px solid #fde68a; }
-    .badge-tier-green { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .info-card-header {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .redflag-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .redflag-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .redflag-dot {
+      color: #ef4444;
+      font-weight: bold;
+    }
 
-    .loader-ring {
-      border: 3px solid rgba(255,255,255,0.3);
-      border-top: 3px solid #fff;
+    .trust-badge-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .trust-badge-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .trust-badge-icon {
+      font-size: 1.15rem;
+    }
+
+    /* SPINNER */
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff;
       border-radius: 50%;
-      width: 18px;
-      height: 18px;
       animation: spin 0.8s linear infinite;
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-  <!-- 1. TOP GLOBAL NAVBAR -->
-  <header class="top-nav">
-    <div class="brand-section">
+  <!-- HEADER -->
+  <header>
+    <a href="/" class="brand-group">
       <div class="brand-logo-icon">AV</div>
-      <div class="brand-text">
-        <h1>AfyaVoice</h1>
-        <span>N-ATLAS SOVEREIGN HEALTH</span>
+      <div>
+        <div class="brand-title">AfyaVoice</div>
+        <div class="brand-subtitle">Clinical Triage Portal</div>
       </div>
-      <div class="status-badge-active">
-        <div class="dot-live"></div>
-        N-ATLAS Voice Active
-      </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="nav-links">
-      <button class="nav-tab active">Voice Triage</button>
-      <button class="nav-tab">Care Plan & Remedy</button>
-      <button class="nav-tab">Doctor Consult</button>
-      <button class="nav-tab">Micro-Pass & Airtime</button>
-      <button class="nav-tab">Clinic Finder</button>
-    </div>
-
-    <!-- Right Controls -->
-    <div class="nav-right">
-      <div class="emergency-pill">
-        <span>*</span> Emergency: 112 / 0800-AFYA
-      </div>
-      <select class="lang-selector">
-        <option>English</option>
-        <option>Yorùbá</option>
-        <option>Hausa</option>
-        <option>Igbo</option>
-        <option>Naija Pidgin</option>
-      </select>
-      <div class="user-profile">
-        <div class="user-info">
-          <div class="user-phone">+234 803 ••• 4192</div>
-          <div class="user-tag">Verified Citizen</div>
-        </div>
-        <div class="user-avatar">MB</div>
-      </div>
+    </a>
+    <div class="header-nav">
+      <a href="/" class="back-home-link">← Back to Home</a>
+      <a href="tel:112" class="emergency-hotline">🚨 Emergency: Call 112</a>
     </div>
   </header>
 
-  <!-- 2. NETWORK TELEMETRY BANNER -->
-  <div class="telemetry-bar">
-    <div class="telemetry-item">
-      <span>●</span> Edge Sovereign NLP: <strong>Oyo Zone (Node #04)</strong>
-    </div>
-    <div class="telemetry-item">
-      <span>((•))</span> 2G/EDGE Optimized Audio Codec <strong>(AMR-WB 12.65 kbps)</strong>
-    </div>
-    <div class="telemetry-item">
-      <span>🔒</span> End-to-End Clinical Encryption (NDPR Sovereign)
-    </div>
-    <div class="telemetry-item" style="margin-left: auto;">
-      <span>👨‍⚕️</span> <strong>3 GP Tele-Triage Doctors Online</strong>
-    </div>
-  </div>
-
-  <!-- 3. MAIN DASHBOARD CONTENT -->
-  <div class="main-wrapper">
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="portal-container">
     
-    <!-- LEFT COLUMN: VOICE-FIRST CLINICAL TRIAGE -->
+    <!-- LEFT COLUMN: TRIAGE FORM & RESULTS -->
     <div>
-      <div class="card">
-        
-        <div class="triage-header-row">
-          <div style="display: flex; align-items: center;">
-            <span class="pill-session">SESSION ACTIVE</span>
-            <span class="ticket-id">Triage Ticket: #NG-IBD-8942</span>
+      <div class="main-card">
+        <div class="portal-heading-row">
+          <h1 class="portal-heading">Symptom Assessment</h1>
+          <p class="portal-subheading">Speak or write your symptoms in your preferred dialect to receive a validated clinical urgency check.</p>
+        </div>
+
+        <!-- STEP 1: LANGUAGE SELECTION -->
+        <div class="step-section">
+          <div class="step-label">
+            <span class="step-num-badge">1</span>
+            <span>Select Your Dialect / Yan Yanayi:</span>
           </div>
-          <div class="speed-controls">
-            <span>⏱ Speed:</span>
-            <button class="speed-btn">1.0x</button>
-            <button class="speed-btn" style="color: var(--text-muted); border: none; background: transparent;">0.8x (Elderly)</button>
+          <div class="lang-chips-grid">
+            <button type="button" class="lang-chip selected" onclick="selectDialect(this, 'Yorùbá')">🟢 Yorùbá</button>
+            <button type="button" class="lang-chip" onclick="selectDialect(this, 'Hausa')">🟢 Hausa</button>
+            <button type="button" class="lang-chip" onclick="selectDialect(this, 'Igbo')">🟢 Igbo</button>
+            <button type="button" class="lang-chip" onclick="selectDialect(this, 'Naija Pidgin')">🟢 Pidgin</button>
+            <button type="button" class="lang-chip" onclick="selectDialect(this, 'English')">🟢 English</button>
           </div>
         </div>
 
-        <h2 class="page-title">Dedicated Voice-First Clinical Triage</h2>
+        <!-- STEP 2: SYMPTOM INPUT -->
+        <div class="step-section">
+          <div class="step-label">
+            <span class="step-num-badge">2</span>
+            <span>Describe What You Are Experiencing:</span>
+          </div>
 
-        <!-- DIALECT SELECTOR -->
-        <div class="dialect-label">Select Consultation Dialect (Èka èdè re):</div>
-        <div class="dialect-group">
-          <button class="dialect-chip selected" onclick="selectDialect(this, 'Yorùbá')">✔ Yorùbá</button>
-          <button class="dialect-chip" onclick="selectDialect(this, 'Hausa')">Hausa</button>
-          <button class="dialect-chip" onclick="selectDialect(this, 'Igbo')">Igbo</button>
-          <button class="dialect-chip" onclick="selectDialect(this, 'Naija Pidgin')">Naija Pidgin</button>
-          <button class="dialect-chip" onclick="selectDialect(this, 'English')">English</button>
-        </div>
+          <div class="tab-switch">
+            <button type="button" class="tab-btn active" id="tab-voice" onclick="setMode('voice')">🎙️ Record Voice Note</button>
+            <button type="button" class="tab-btn" id="tab-text" onclick="setMode('text')">✍️ Type Symptoms</button>
+          </div>
 
-        <!-- VOICE NOTE CALLER CARD -->
-        <div class="voice-call-card">
-          <div class="caller-header">
-            <div class="caller-meta">
-              <div class="caller-icon">👤</div>
-              <div>
-                <div class="caller-name">Mama Bisi (Patient) <span class="tag-call-source">Caller Voice</span></div>
-                <div class="caller-time">Yesterday 16:42 • Recorded via Sovereign Audio Engine</div>
+          <!-- VOICE INPUT PANEL -->
+          <div id="panel-voice">
+            <div class="voice-recorder-card" id="recorder-card">
+              <button type="button" class="mic-button" id="mic-btn" onclick="toggleRecording()">🎤</button>
+              <div class="mic-status-title" id="mic-title">Tap to start recording</div>
+              <div class="mic-status-desc" id="mic-desc">Speak naturally in your mother tongue for 10–30 seconds</div>
+              
+              <div class="audio-upload-alt">
+                <span>Or upload audio file:</span>
+                <input type="file" id="audio-file-input" accept="audio/*" style="font-size: 0.85rem;">
               </div>
             </div>
-            <div class="audio-length-badge" id="duration-badge">0:34 / 2:00</div>
           </div>
 
-          <!-- AUDIO WAVEFORM PLAYER -->
-          <div class="player-row">
-            <button class="play-btn-circle" id="btn-play-audio" onclick="playAudioDemo()">▶</button>
-            <div class="wave-bars">
-              <div class="wave-bar active"></div><div class="wave-bar"></div><div class="wave-bar active"></div>
-              <div class="wave-bar active"></div><div class="wave-bar"></div><div class="wave-bar active"></div>
-              <div class="wave-bar active"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-              <div class="wave-bar active"></div><div class="wave-bar"></div><div class="wave-bar active"></div>
-              <div class="wave-bar"></div><div class="wave-bar active"></div><div class="wave-bar active"></div>
-              <div class="wave-bar"></div><div class="wave-bar active"></div><div class="wave-bar"></div>
-            </div>
-            <div class="player-timestamp" id="player-time">0:14 / 0:34</div>
-            <audio id="real-audio-player" style="display: none;"></audio>
-          </div>
-
-          <!-- TRANSCRIPT BOX -->
-          <div class="transcript-box">
-            <div class="transcript-title-row">
-              <span class="transcript-label" id="transcript-heading">ORIGINAL YORÙBÁ TRANSCRIPT</span>
-              <button class="btn-toggle-trans" onclick="toggleTranslation()">文A Toggle English Translation</button>
-            </div>
-            <div class="transcript-text" id="transcript-content">
-              "Ara mi n gbona ti n si n bi leralera lati ana. Mi o le je ounje rara, gbogbo ara mi lo n ro mi, oju mi si n dudu..."
-            </div>
-            <div class="translation-subtext" id="translation-content">
-              <strong>English Clinical Translation:</strong> "My body has been burning with fever and I have been vomiting continuously since yesterday. I cannot eat any food, my entire body aches, and I feel dizzy..."
+          <!-- TEXT INPUT PANEL -->
+          <div id="panel-text" style="display: none;">
+            <textarea class="symptom-textarea" id="symptoms-input" placeholder="Type how you are feeling (e.g., 'Ara mi n gbona lati ana, mo si n bi leralera' or 'I have had a high fever and severe headache for 2 days')..."></textarea>
+            
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-light); margin-top: 0.65rem;">Tap to add common symptoms:</div>
+            <div class="quick-symptom-tags">
+              <button type="button" class="tag-btn" onclick="appendSymptom('High Fever (Ibà)')">+ High Fever</button>
+              <button type="button" class="tag-btn" onclick="appendSymptom('Severe Headache (Orí fífọ́)')">+ Severe Headache</button>
+              <button type="button" class="tag-btn" onclick="appendSymptom('Vomiting & Nausea (Èébì)')">+ Vomiting</button>
+              <button type="button" class="tag-btn" onclick="appendSymptom('Chest Pain (Aiya ríro)')">+ Chest Pain</button>
+              <button type="button" class="tag-btn" onclick="appendSymptom('Stomach Pain (Inú rírun)')">+ Stomach Pain</button>
+              <button type="button" class="tag-btn" onclick="appendSymptom('General Body Weakness (Àárẹ̀)')">+ Body Weakness</button>
             </div>
           </div>
         </div>
 
-        <!-- INTERACTIVE RECORDING & CONSULTATION PANEL -->
-        <div class="interactive-panel">
-          <div class="tabs-row">
-            <button class="tab-toggle-btn active" id="tab-voice-btn" onclick="switchInputMode('voice')">🎙️ Record Live Voice</button>
-            <button class="tab-toggle-btn" id="tab-text-btn" onclick="switchInputMode('text')">💬 Type Symptoms Text</button>
+        <!-- STEP 3: PHONE NUMBER -->
+        <div class="step-section">
+          <div class="step-label">
+            <span class="step-num-badge">3</span>
+            <span>WhatsApp Number for Care Summary:</span>
           </div>
-
-          <div id="panel-voice-record">
-            <div class="record-controls">
-              <button class="btn-mic-round" id="mic-record-btn" onclick="toggleMicRecording()">🎤</button>
-              <div>
-                <div style="font-weight: 700; font-size: 0.95rem;" id="mic-status-title">Click microphone to record your voice</div>
-                <div style="font-size: 0.78rem; color: var(--text-muted);" id="mic-timer-text">Speak symptoms in Yoruba, Hausa, Igbo, Pidgin, or English</div>
-              </div>
-            </div>
-            <input type="file" id="portal-file-upload" class="input-field" accept="audio/*">
-          </div>
-
-          <div id="panel-text-record" style="display: none;">
-            <textarea id="portal-text-input" class="input-field" placeholder="Describe symptoms e.g., 'Aiya n dun mi ati fever lati ana' or 'I have severe chest pain and breathlessness'"></textarea>
-          </div>
-
-          <input type="text" id="portal-phone-input" class="input-field" value="+2348030004192" placeholder="Patient Phone Number (+234...)">
-
-          <button class="btn-submit-triage" id="btn-submit-triage" onclick="submitClinicalTriage()">
-            <span>Execute N-ATLAS Sovereign Clinical Triage</span>
-          </button>
+          <input type="tel" class="form-input" id="phone-input" value="+2348030004192" placeholder="+2348012345678">
+          <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.35rem;">We will send your clinical triage summary and home remedy advice directly to this WhatsApp number.</div>
         </div>
 
-        <!-- REAL-TIME TRIAGE DIAGNOSIS RESULT CARD -->
-        <div class="triage-output-card" id="output-triage-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
-            <div style="font-weight: 800; font-size: 1.05rem; color: var(--primary-dark);">🏥 N-ATLAS Clinical Triage Assessment</div>
-            <span id="res-triage-badge" style="font-weight: 800; font-size: 0.78rem; padding: 0.3rem 0.75rem; border-radius: 9999px;">URGENCY</span>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
-            <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 0.65rem 0.85rem; border-radius: 8px;">
-              <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">CHIEF COMPLAINT</div>
-              <div id="res-complaint" style="font-weight: 800; color: var(--text-main);">-</div>
-            </div>
-            <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 0.65rem 0.85rem; border-radius: 8px;">
-              <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">DURATION & ONSET</div>
-              <div id="res-duration" style="font-weight: 800; color: var(--text-main);">-</div>
-            </div>
-            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 0.65rem 0.85rem; border-radius: 8px; grid-column: span 2;">
-              <div style="font-size: 0.7rem; color: #166534; font-weight: 700;">SNOMED CT CONCEPT CODE</div>
-              <div id="res-snomed" style="font-family: monospace; font-weight: 800; color: #047857; font-size: 0.9rem;">-</div>
-            </div>
-          </div>
-
-          <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem; font-size: 0.88rem; white-space: pre-wrap; line-height: 1.5; color: #1e293b;" id="res-whatsapp-msg">
-            -
-          </div>
-        </div>
+        <!-- CTA BUTTON -->
+        <button type="button" class="btn-submit-triage" id="submit-btn" onclick="runTriage()">
+          <span>Assess My Symptoms Now</span>
+          <span>→</span>
+        </button>
 
       </div>
-    </div>
 
-    <!-- RIGHT COLUMN: CITIZEN RECORD & SAFETY PROTOCOLS -->
-    <div class="sidebar-col">
-      
-      <!-- CITIZEN RECORD -->
-      <div class="citizen-card">
-        <div class="citizen-card-head">
-          <span class="label-meta-title">CITIZEN TRIAGE RECORD</span>
-          <span class="badge-synced">Synced via USSD</span>
-        </div>
-
-        <div class="citizen-profile-row">
-          <div class="citizen-avatar-box">MB</div>
+      <!-- RESULTS SECTION -->
+      <div class="results-card" id="results-card">
+        <div class="result-banner" id="res-banner">
           <div>
-            <div class="citizen-title-name">Mama Bisi</div>
-            <div class="citizen-location">Bodija Market Trader • Ibadan, Oyo State</div>
-            <div class="citizen-gsm">Verified GSM: 0803 ••• 4192</div>
+            <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Manchester Triage Assessment</div>
+            <div class="result-banner-title" id="res-title">Urgency Level</div>
+          </div>
+          <div class="result-banner-pill" id="res-tier-pill">Tier</div>
+        </div>
+
+        <div class="findings-grid">
+          <div class="finding-item">
+            <div class="finding-label">Chief Complaint</div>
+            <div class="finding-value" id="res-complaint">-</div>
+          </div>
+          <div class="finding-item">
+            <div class="finding-label">Duration & Onset</div>
+            <div class="finding-value" id="res-duration">-</div>
+          </div>
+          <div class="snomed-badge">
+            <div class="finding-label" style="color: var(--primary);">SNOMED CT Clinical Standard</div>
+            <div class="finding-value" style="color: var(--primary); font-family: 'JetBrains Mono', monospace;" id="res-snomed">-</div>
           </div>
         </div>
 
-        <!-- VOICE PASS QUOTA -->
-        <div class="quota-box">
-          <div class="quota-header-row">
-            <span>Active Sovereign Voice Pass:</span>
-            <span>Instant Pass</span>
-          </div>
-          <div class="progress-bar-bg">
-            <div class="progress-fill"></div>
-          </div>
-          <div class="quota-footer-row">
-            <span>Remaining Allocation:</span>
-            <span class="quota-highlight">1 Exchange Left</span>
-          </div>
-        </div>
-      </div>
+        <div style="font-size: 0.82rem; font-weight: 800; color: var(--text-muted); margin-bottom: 0.45rem;">Clinical Guidance & Care Plan:</div>
+        <div class="care-instructions-box" id="res-message">-</div>
 
-      <!-- CLINICAL SAFETY GUARDRAILS -->
-      <div class="guardrails-card">
-        <div class="guardrails-title">
-          <span>🛡️</span> Clinical Safety Guardrails
-        </div>
-        <p class="guardrails-desc">
-          Strict regulatory protocols enforced by the Federal Ministry of Health (FMoH) and NAFDAC clinical algorithms:
-        </p>
-
-        <div class="protocol-box">
-          <div class="protocol-title">
-            <span>✅</span> NAFDAC Approved Protocol
-          </div>
-          <div class="protocol-desc">
-            Evidence-based triage standard algorithms for malaria, enteric fever, and respiratory distress.
-          </div>
+        <div class="whatsapp-confirm-pill">
+          <span>📲</span>
+          <span>Summary and action steps delivered to patient WhatsApp (+234 803 ••• 4192)</span>
         </div>
 
-        <div class="protocol-box" style="background: #f8fafc; border-color: #e2e8f0;">
-          <div class="protocol-title" style="color: #0369a1;">
-            <span>🔬</span> Manchester Triage System (MTS)
-          </div>
-          <div class="protocol-desc">
-            Certified 5-level clinical urgency discriminator matrix (Version 3.2-MDCN).
-          </div>
-        </div>
-
-        <div class="protocol-box" style="background: #fdf4ff; border-color: #f0abfc;">
-          <div class="protocol-title" style="color: #86198f;">
-            <span>🌐</span> Sovereign SNOMED CT Registry
-          </div>
-          <div class="protocol-desc">
-            Indigenous terminology mapping across Yoruba, Hausa, Igbo, and Naija Pidgin dialects.
-          </div>
+        <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem;">
+          <button type="button" class="tag-btn" style="padding: 0.65rem 1.25rem; font-size: 0.88rem;" onclick="resetAssessment()">🔄 Start Another Assessment</button>
+          <button type="button" class="tag-btn" style="padding: 0.65rem 1.25rem; font-size: 0.88rem;" onclick="window.print()">🖨️ Print Summary</button>
         </div>
       </div>
 
     </div>
 
-  </div>
+    <!-- RIGHT COLUMN: CLINICAL SAFETY & RED FLAGS -->
+    <aside class="sidebar-panel">
+      
+      <!-- RED FLAGS NOTICE -->
+      <div class="info-card" style="border-top: 4px solid #ef4444;">
+        <div class="info-card-header" style="color: #991b1b;">
+          <span>🚨</span> Emergency Red Flags
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.85rem;">
+          If the patient shows any of the following symptoms, stop the web check and seek emergency care immediately:
+        </p>
+        <ul class="redflag-list">
+          <li class="redflag-item"><span class="redflag-dot">•</span> Severe difficulty breathing, gasping, or blue lips</li>
+          <li class="redflag-item"><span class="redflag-dot">•</span> Crushing chest pressure radiating to arm or jaw</li>
+          <li class="redflag-item"><span class="redflag-dot">•</span> Inability to stay awake, confusion, or convulsions</li>
+          <li class="redflag-item"><span class="redflag-dot">•</span> Uncontrollable vomiting or severe bleeding</li>
+          <li class="redflag-item"><span class="redflag-dot">•</span> High fever in an infant under 3 months</li>
+        </ul>
+        <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border); font-size: 0.8rem; font-weight: 700; color: #991b1b;">
+          Call 112 or visit the nearest General Hospital Emergency Unit.
+        </div>
+      </div>
+
+      <!-- TRUST & STANDARDS -->
+      <div class="info-card">
+        <div class="info-card-header">
+          <span>🛡️</span> Clinical Governance
+        </div>
+        <div class="trust-badge-row">
+          <div class="trust-badge-item">
+            <span class="trust-badge-icon">🏥</span>
+            <div><strong>Manchester Triage System:</strong> 5-tier clinical urgency matrix ensuring accurate prioritization.</div>
+          </div>
+          <div class="trust-badge-item">
+            <span class="trust-badge-icon">🌐</span>
+            <div><strong>SNOMED CT Registry:</strong> Dialect symptoms standardized to global healthcare codes.</div>
+          </div>
+          <div class="trust-badge-item">
+            <span class="trust-badge-icon">🔒</span>
+            <div><strong>NDPA Compliant:</strong> Patient information is securely encrypted and never shared.</div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
 
   <script>
-    let activeInputMode = 'voice';
+    let currentMode = 'voice';
     let selectedDialect = 'Yorùbá';
     let mediaRecorder = null;
     let audioChunks = [];
-    let recordedBlob = null;
-    let timerInterval = null;
-    let secondsElapsed = 0;
+    let recordedAudioBlob = null;
+    let recordTimer = null;
+    let secondsCount = 0;
 
-    function selectDialect(btn, dialect) {
-      document.querySelectorAll('.dialect-chip').forEach(c => {
-        c.classList.remove('selected');
-        c.innerText = c.innerText.replace('✔ ', '');
-      });
+    function selectDialect(btn, lang) {
+      document.querySelectorAll('.lang-chip').forEach(c => c.classList.remove('selected'));
       btn.classList.add('selected');
-      btn.innerText = '✔ ' + dialect;
-      selectedDialect = dialect;
-      document.getElementById('transcript-heading').innerText = 'ORIGINAL ' + dialect.toUpperCase() + ' TRANSCRIPT';
+      selectedDialect = lang;
     }
 
-    function switchInputMode(mode) {
-      activeInputMode = mode;
-      document.getElementById('tab-voice-btn').classList.toggle('active', mode === 'voice');
-      document.getElementById('tab-text-btn').classList.toggle('active', mode === 'text');
-      document.getElementById('panel-voice-record').style.display = mode === 'voice' ? 'block' : 'none';
-      document.getElementById('panel-text-record').style.display = mode === 'text' ? 'block' : 'none';
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('tab-voice').classList.toggle('active', mode === 'voice');
+      document.getElementById('tab-text').classList.toggle('active', mode === 'text');
+      document.getElementById('panel-voice').style.display = mode === 'voice' ? 'block' : 'none';
+      document.getElementById('panel-text').style.display = mode === 'text' ? 'block' : 'none';
     }
 
-    function toggleTranslation() {
-      const transEl = document.getElementById('translation-content');
-      transEl.style.display = transEl.style.display === 'none' ? 'block' : 'none';
+    function appendSymptom(tag) {
+      const txt = document.getElementById('symptoms-input');
+      txt.value = txt.value ? (txt.value + ', ' + tag) : tag;
+      txt.focus();
     }
 
-    function playAudioDemo() {
-      const btn = document.getElementById('btn-play-audio');
-      if (btn.innerText === '▶') {
-        btn.innerText = '⏸';
-      } else {
-        btn.innerText = '▶';
-      }
-    }
-
-    async function toggleMicRecording() {
-      const micBtn = document.getElementById('mic-record-btn');
-      const statusTitle = document.getElementById('mic-status-title');
-      const timerText = document.getElementById('mic-timer-text');
+    async function toggleRecording() {
+      const micBtn = document.getElementById('mic-btn');
+      const micTitle = document.getElementById('mic-title');
+      const micDesc = document.getElementById('mic-desc');
+      const card = document.getElementById('recorder-card');
 
       if (!mediaRecorder || mediaRecorder.state === 'inactive') {
         try {
@@ -976,113 +833,116 @@ def get_portal_ui():
 
           mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
           mediaRecorder.onstop = () => {
-            recordedBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            statusTitle.innerText = 'Voice note recorded successfully!';
-            timerText.innerText = 'Duration: ' + secondsElapsed + 's • Ready to triage.';
+            recordedAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            micTitle.innerText = 'Voice note recorded (' + secondsCount + 's)';
+            micDesc.innerText = 'Ready for clinical triage assessment';
+            card.classList.remove('recording');
           };
 
           mediaRecorder.start();
           micBtn.classList.add('recording');
           micBtn.innerText = '⏹';
-          statusTitle.innerText = 'Recording patient speech...';
-          secondsElapsed = 0;
-          timerInterval = setInterval(() => {
-            secondsElapsed++;
-            timerText.innerText = 'Recording: ' + secondsElapsed + 's (Speak clearly)';
+          card.classList.add('recording');
+          micTitle.innerText = 'Recording your symptoms...';
+          secondsCount = 0;
+          recordTimer = setInterval(() => {
+            secondsCount++;
+            micDesc.innerText = 'Recording: ' + secondsCount + 's • Speak naturally in ' + selectedDialect;
           }, 1000);
         } catch (err) {
-          alert('Microphone access denied. You can select an audio file or use the text tab!');
+          alert('Microphone access is not available in this browser. Please use the "Type Symptoms" tab or select an audio file!');
         }
       } else {
         mediaRecorder.stop();
-        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        mediaRecorder.stream.getTracks().forEach(t => t.stop());
         micBtn.classList.remove('recording');
         micBtn.innerText = '🎤';
-        clearInterval(timerInterval);
+        clearInterval(recordTimer);
       }
     }
 
-    async function submitClinicalTriage() {
-      const submitBtn = document.getElementById('btn-submit-triage');
-      const phone = document.getElementById('portal-phone-input').value.trim();
+    async function runTriage() {
+      const btn = document.getElementById('submit-btn');
+      const phone = document.getElementById('phone-input').value.trim();
 
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<div class="loader-ring"></div> Running N-ATLAS Sovereign Engine...';
+      btn.disabled = true;
+      btn.innerHTML = '<div class="loading-spinner"></div> Analyzing symptoms with N-ATLaS...';
 
       let endpoint = '';
       let payload = null;
 
-      if (activeInputMode === 'voice') {
-        const fileInput = document.getElementById('portal-file-upload');
-        let fileToUpload = recordedBlob;
+      if (currentMode === 'voice') {
+        const fileInput = document.getElementById('audio-file-input');
+        let uploadBlob = recordedAudioBlob;
         if (fileInput.files.length > 0) {
-          fileToUpload = fileInput.files[0];
+          uploadBlob = fileInput.files[0];
         }
 
-        if (!fileToUpload) {
-          alert('Please record a voice note or choose an audio file first!');
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = '<span>Execute N-ATLAS Sovereign Clinical Triage</span>';
+        if (!uploadBlob) {
+          alert('Please record your voice note or select an audio file first!');
+          btn.disabled = false;
+          btn.innerHTML = '<span>Assess My Symptoms Now</span> <span>→</span>';
           return;
         }
 
         endpoint = '/api/triage/audio';
         const formData = new FormData();
-        formData.append('audio_file', fileToUpload, 'consultation.wav');
+        formData.append('audio_file', uploadBlob, 'consultation.wav');
         formData.append('phone_number', phone);
         payload = formData;
       } else {
-        const textSymptoms = document.getElementById('portal-text-input').value.trim();
-        if (!textSymptoms) {
-          alert('Please type patient symptoms!');
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = '<span>Execute N-ATLAS Sovereign Clinical Triage</span>';
+        const symptomsText = document.getElementById('symptoms-input').value.trim();
+        if (!symptomsText) {
+          alert('Please enter your symptoms before submitting.');
+          btn.disabled = false;
+          btn.innerHTML = '<span>Assess My Symptoms Now</span> <span>→</span>';
           return;
         }
         endpoint = '/api/triage/text';
-        payload = JSON.stringify({ phone_number: phone, symptoms_text: textSymptoms });
+        payload = JSON.stringify({ phone_number: phone, symptoms_text: symptomsText });
       }
 
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
-          headers: activeInputMode === 'text' ? { 'Content-Type': 'application/json' } : {},
+          headers: currentMode === 'text' ? { 'Content-Type': 'application/json' } : {},
           body: payload
         });
 
         const data = await res.json();
 
         if (data.status === 'success') {
-          // Display Output Card
-          const outCard = document.getElementById('output-triage-card');
-          outCard.style.display = 'block';
+          const resultsCard = document.getElementById('results-card');
+          resultsCard.style.display = 'block';
 
-          // Update Triage Badge
-          const badgeEl = document.getElementById('res-triage-badge');
-          badgeEl.innerText = data.triage_title || (data.triage_tier + ' PRIORITY');
-          badgeEl.className = data.triage_tier === 'RED' ? 'badge-tier-red' : data.triage_tier === 'YELLOW' ? 'badge-tier-yellow' : 'badge-tier-green';
+          // Set Banner Style
+          const banner = document.getElementById('res-banner');
+          const tier = data.triage_tier || 'GREEN';
+          banner.className = 'result-banner ' + (tier === 'RED' ? 'red' : tier === 'YELLOW' ? 'yellow' : 'green');
+          
+          document.getElementById('res-title').innerText = data.triage_title || (tier + ' PRIORITY');
+          document.getElementById('res-tier-pill').innerText = tier + ' PRIORITY';
+          document.getElementById('res-complaint').innerText = data.chief_complaint || 'General clinical malaise';
+          document.getElementById('res-duration').innerText = data.duration || 'Reported duration';
+          document.getElementById('res-snomed').innerText = (data.snomed_name || 'Clinical Concept') + ' (ID: ' + (data.snomed_code || 'Standard') + ')';
+          document.getElementById('res-message').innerText = data.patient_message || 'Please consult your primary healthcare provider.';
 
-          // Populate Fields
-          document.getElementById('res-complaint').innerText = data.chief_complaint || 'N/A';
-          document.getElementById('res-duration').innerText = data.duration || 'N/A';
-          document.getElementById('res-snomed').innerText = (data.snomed_name || 'Clinical Finding') + ' (SNOMED ID: ' + (data.snomed_code || 'Standard') + ')';
-          document.getElementById('res-whatsapp-msg').innerText = data.patient_message;
-
-          // Update Transcript in Player Card if text was processed
-          if (data.transcript) {
-            document.getElementById('transcript-content').innerText = '"' + data.transcript + '"';
-          }
-
-          outCard.scrollIntoView({ behavior: 'smooth' });
+          resultsCard.scrollIntoView({ behavior: 'smooth' });
         } else {
-          alert('Triage processing failed: ' + (data.error || 'Unknown error'));
+          alert('Triage check error: ' + (data.error || 'Unable to process.'));
         }
       } catch (err) {
-        alert('Connection error: ' + err.message);
+        alert('Network error: ' + err.message);
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>Execute N-ATLAS Sovereign Clinical Triage</span>';
+        btn.disabled = false;
+        btn.innerHTML = '<span>Assess My Symptoms Now</span> <span>→</span>';
       }
+    }
+
+    function resetAssessment() {
+      document.getElementById('results-card').style.display = 'none';
+      document.getElementById('symptoms-input').value = '';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   </script>
 </body>

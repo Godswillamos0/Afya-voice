@@ -190,13 +190,14 @@ python main.py
 ```
 The server will start at **`http://localhost:8000`**.
 
-### Access the Web Telemedicine Portal & Simulator
+### Access the Web Interfaces
 Open your browser and navigate to:
- **[http://localhost:8000/portal](http://localhost:8000/portal)**
+* **Patient Landing Page**: **[http://localhost:8000/](http://localhost:8000/)** (Features the patient-facing overview, supported Nigerian dialects, clinical governance, and direct CTA to start triage)
+* **Clinical Triage Portal**: **[http://localhost:8000/portal](http://localhost:8000/portal)** (Interactive voice recording, text symptom input with quick tags, and live Manchester Triage evaluation)
 
-* Click the **Microphone** button to speak a voice note into your laptop.
-* Or use the **Text Message** tab to type symptoms in English, Yoruba, Hausa, Igbo, or Pidgin.
-* Click **Run N-ATLAS Clinical Triage** to see real-time SNOMED CT mapping, urgency classification, and the simulated WhatsApp response.
+* Click the **Microphone** button to record a voice note in your browser or select an audio file.
+* Or use the **Type Symptoms** tab with quick-add symptom pills (Fever, Headache, Vomiting, Chest Pain).
+* Click **Assess My Symptoms Now** to receive instant Manchester Triage urgency classification, SNOMED CT clinical coding, and personalized patient care instructions.
 
 ---
 
