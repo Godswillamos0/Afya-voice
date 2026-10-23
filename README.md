@@ -1,232 +1,151 @@
-# AfyaVoice (Sovereign Multilingual Healthcare Voice Triage)
+# AfyaMama / AfyaVoice: Sovereign Maternal & Antenatal Healthcare Platform
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.14-3776AB.svg?logo=python)](https://python.org)
-[![Model](https://img.shields.io/badge/LLM-N--ATLaS%20(Llama--3%208B)-FF6F00.svg)](https://huggingface.co/NCAIR1/N-ATLaS)
-[![Clinical](https://img.shields.io/badge/Standards-MTS%20%7C%20SNOMED%20CT-0284C7.svg)](https://www.snomed.org)
-[![License](https://img.shields.io/badge/License-Proprietary%20%2F%20FMCIDE-gray.svg)](#)
+[![Telegram](https://img.shields.io/badge/Telegram-Bot%20API-0284C7.svg?logo=telegram)](https://telegram.org)
+[![Clinical RAG](https://img.shields.io/badge/Knowledge-WHO%20%7C%20Nigeria%20FMOH-BE185D.svg)](#)
+[![Clinical Standards](https://img.shields.io/badge/Standards-MTS%20%7C%20SNOMED%20CT-0284C7.svg)](https://www.snomed.org)
 
-> **AfyaVoice** is Nigeria's sovereign multilingual clinical voice triage and telemedicine platform. It bridges the gap between everyday Nigerian local languages (**Yoruba, Hausa, Igbo, Nigerian Pidgin, and English**) and professional healthcare by combining sovereign indigenous AI with international clinical triage standards (**Manchester Triage System & SNOMED CT**).
-
----
-
-## Platform Overview & Purpose
-
-Millions of Nigerians face barriers in accessing primary healthcare due to language mismatch, high emergency room congestion, and low physician density. AfyaVoice allows patients to submit health complaints using their own voice or text messages.
-
-1. **Indigenous Linguistic Comprehension:** Powered by **N-ATLaS-LLM** (an indigenous fine-tune of Llama-3 8B developed by Awarri Technologies and the Federal Ministry of Communications, Innovation and Digital Economy - FMCIDE).
-2. **Clinical Safety by Design:** Pure generative AI is never allowed to hallucinate medical advice. Symptoms are standardized via **SNOMED CT Concept IDs** and triaged through the deterministic **Manchester Triage System (MTS)** decision matrix.
-3. **Omnichannel Access:** Patients can interact either directly via **WhatsApp** (voice notes and text) or through the **Web Telemedicine Portal & Simulator**.
+> **AfyaMama** is Nigeria's sovereign maternal and antenatal voice triage platform designed specifically for **pregnant women and new mothers**. It bridges indigenous languages (**Yorùbá, Hausa, Igbo, Nigerian Pidgin, and English**) with evidence-based maternal medicine by combining sovereign AI with an authoritative **RAG (Retrieval-Augmented Generation) knowledge engine** built on **WHO Antenatal Guidelines** and **Federal Ministry of Health (FMOH) Nigeria Maternal Care Protocols**.
 
 ---
 
-## System Architecture
+## 🤰 Platform Overview
+
+Maternal mortality remains a critical challenge in West Africa. Many mothers face language barriers, delayed recognition of cardinal obstetric danger signs (such as pre-eclampsia and antepartum hemorrhage), and lack of timely antenatal guidance.
+
+AfyaMama allows pregnant women and new mothers to speak or type their symptoms and concerns in their natural mother tongue, receiving verified clinical guidance:
+
+1. **Evidence-Based Maternal RAG:** All clinical recommendations are grounded in indexed **WHO Antenatal Care Guidelines (8-contact model)**, **WHO Obstetric Emergencies (IMPAC)**, and **Nigeria FMOH Basic Newborn & Maternal Care Guidelines**.
+2. **Obstetric Triage & Safety:** Automatic detection of cardinal danger signs:
+   * **🔴 RED (Obstetric Emergency):** Antepartum Haemorrhage (vaginal bleeding), Pre-eclampsia (severe headache + blurred vision), Eclamptic convulsions, Reduced/Absent fetal movement, Puerperal sepsis, Cord prolapse.
+   * **🟡 YELLOW (Urgent PHC Review):** Hyperemesis gravidarum, high fever (suspected malaria/pyelonephritis), severe dysuria.
+   * **🟢 GREEN (Routine Care & Remedies):** Physiological morning sickness, dietary ginger remedies, heartburn, lower back ache, routine ANC visit scheduling, and daily Iron (60 mg) + Folic Acid (400 µg).
+3. **Indigenous Linguistic Support:** Spoken and written comprehension in **Yorùbá**, **Hausa**, **Igbo**, **Nigerian Pidgin**, and **English**.
+4. **Accessible Delivery Channels:**
+   * **Telegram Bot:** Real-time voice note and text triage with interactive trimester buttons (`python telegram_runner.py`).
+   * **Web Telemedicine Portal:** Clean web assessment with voice recorder and live RAG evidence citations.
+
+---
+
+## 🏛️ System Architecture
 
 ```
-[ Patient Voice Note / Text ]
-              │
-              ▼
-   [ Audio Ingestion Engine ] ──► FFmpeg Normalization (16kHz PCM mono WAV)
-              │
-              ▼
-     [ Speech-to-Text ASR ]   ──► Native Audio Transcription (Whisper / Local Engine)
-              │
-              ▼
-    [ N-ATLaS Sovereign LLM ] ──► Extracts Chief Complaint, Symptoms, Duration & Severity
-              │
-              ▼
-   [ SNOMED CT Concept Registry ] ──► Maps colloquial terms (e.g., "aiya n dun mi") to SNOMED IDs
-              │
-              ▼
-    [ MTS Triage Decision Engine ] ──► Evaluates MTS Discriminators (RED / YELLOW / GREEN / WHITE)
-              │
-              ├───────────────────────────────┐
-              ▼                               ▼
- [ WhatsApp Cloud API Auto-Reply ]   [ Database Record & Web Portal ]
- (Personalized Clinical Guidance)     (SQLite / PostgreSQL Persistence)
-```
-
----
-
-## Core Features & Subsystems
-
-### 1. Conversational Audio Ingestion Engine
-* Integrates directly with Meta's **WhatsApp Cloud API (v25.0)**.
-* Automatic media fetching, decapsulation, and **FFmpeg** audio normalization to 16kHz mono linear PCM `.wav`.
-* Handles `.ogg` (Opus), `.mp4`, `.m4a`, and `.wav` formats.
-
-### 2. Sovereign Multilingual AI Pipeline (N-ATLaS)
-* **Linguistic Specialization:** Supports **Hausa (`ha`)**, **Yoruba (`yo`)**, **Igbo (`ig`)**, **Nigerian Pidgin (`pcm`)**, and **English (`en`)**.
-* Extracts structured clinical entities via Pydantic schema validation:
-  * Chief Complaint
-  * Associated Symptoms List
-  * Duration & Onset
-  * Patient-Perceived Severity
-
-### 3. Standards-Compliant Clinical Triage (SNOMED CT & MTS)
-* **SNOMED CT Concept Registry (`services/triage/snomed_registry.py`):** Standardizes informal indigenous complaints:
-  * *"aiya n dun mi"* (Yoruba) / *"ciwon kirji"* (Hausa) $\rightarrow$ **SNOMED Concept `29857009`** (Chest Pain)
-  * *"no fit breathe"* (Pidgin) / *"mi o le mi daada"* (Yoruba) $\rightarrow$ **SNOMED Concept `267036007`** (Dyspnea)
-  * *"body dey hot"* (Pidgin) / *"zazzabi"* (Hausa) $\rightarrow$ **SNOMED Concept `386661006`** (Fever)
-  * *"ori n fo mi"* (Yoruba) / *"isi owuwa"* (Igbo) $\rightarrow$ **SNOMED Concept `25064002`** (Headache)
-  * *"farfadiya"* (Hausa) / *"warapa"* (Yoruba) $\rightarrow$ **SNOMED Concept `91175000`** (Seizure)
-* **Manchester Triage System Matrix (`config/mts_protocols.json`):**
-  * **🔴 RED (Emergency / 0 mins):** Cardiac Chest Pain, Inadequate Breathing, Convulsion, Hemorrhage.
-  * **🟡 YELLOW (Urgent / 60 mins):** Persistent High Fever, Severe Abdominal Pain, Dehydration Risk.
-  * **🟢 GREEN (Routine / 120 mins):** Mild Upper Respiratory Symptoms, Mild Headache, General Malaise.
-  * **⚪ WHITE (Self-Care / 240 mins):** Minor self-limiting symptoms.
-
-### 4. Dual Channel Interfaces
-* **WhatsApp Cloud API:** Automated outbound patient messaging with clinical advice and Nigerian emergency hotline (**112**) directives within the 24-hour service window.
-* **Web Telemedicine Portal & Simulator (`http://localhost:8000/portal`):**
-  * Microphone voice recorder with live audio wave player.
-  * Multi-language text symptoms tester.
-  * Real-time SNOMED CT and MTS analytics card.
-  * Interactive WhatsApp phone mockup.
-
-### 5. Regulatory & Data Privacy Compliance
-* Compliant with **Nigeria Data Protection Act (NDPA / NDPC)** and **HIPAA**.
-* Phone numbers (MSISDN) are stored using **SHA-256 cryptographic one-way hashing**.
-* Complete consultation history and audio logs stored in SQLite / PostgreSQL.
-
----
-
-## 📂 Project Structure
-
-```
-Afya voice/
-├── api/
-│   ├── portal/
-│   │   └── routes.py              # Web Telemedicine Portal & Live Simulator (/portal)
-│   └── webhooks/
-│       └── whatsapp.py            # Meta WhatsApp Cloud API Webhook Handler
-├── config/
-│   └── mts_protocols.json         # Manchester Triage System (MTS) Discriminator Matrix
-├── core/
-│   ├── database/
-│   │   ├── models.py              # SQLAlchemy ERD Models (Patients, Sessions, AudioLogs)
-│   │   └── session.py             # Database engine & sessionmaker factory
-│   └── schemas/
-│       └── payloads.py            # Pydantic schemas for data interchange
-├── services/
-│   ├── audio/
-│   │   └── processor.py           # FFmpeg audio pipeline (download, normalize to 16kHz)
-│   ├── database/
-│   │   └── session_manager.py     # Database session recorder with phone hashing
-│   ├── llm/
-│   │   └── clinical_parser.py     # N-ATLaS LLM Clinical NLP Symptom Extractor
-│   ├── messaging/
-│   │   └── whatsapp.py            # Meta Outbound Graph API Messenger
-│   └── triage/
-│       ├── engine.py              # MTS Triage Decision Support Engine
-│       └── snomed_registry.py     # SNOMED CT Multilingual Concept Registry
-├── storage/
-│   ├── audio/                     # Normalized WAV audio storage
-│   └── temp_uploads/              # Temporary audio uploads
-├── .env                           # Environment secrets & API configuration
-├── main.py                        # FastAPI Application entry point
-├── requirements.txt               # Python dependencies
-└── README.md                      # Documentation
+[ Pregnant Mother Voice Note / Text ]
+          │ (Spoken in Yoruba, Hausa, Igbo, Pidgin, or English)
+          ▼
+┌─────────────────────────────────┐
+│     Conversational Ingestion    │
+│  • Telegram Bot (@AfyaVoiceBot) │
+│  • Web Portal (/portal)         │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌────────────────────────────────────────────────────────┐
+│  Maternal Query Expansion & Translation Engine         │
+│  - Maps indigenous terms (e.g., "eje", "ori fifo",     │
+│    "omo o gbon", "pikin no dey kick") to clinical concepts│
+└────────────────┬───────────────────────────────────────┘
+                 │
+                 ▼
+┌────────────────────────────────────────────────────────┐
+│  Maternal RAG Knowledge Base (SQLite FTS5 BM25 Engine) │
+│  ───────────────────────────────────────────────────── │
+│  • WHO Recommendations on Antenatal Care (2016)        │
+│  • WHO Integrated Management of Pregnancy (PCPNC/IMPAC)│
+│  • Nigeria FMOH Maternal & Newborn Care Protocols      │
+│  • WHO Intrapartum & Postnatal Care Guidelines         │
+└────────────────┬───────────────────────────────────────┘
+                 │
+                 ▼
+┌────────────────────────────────────────────────────────┐
+│  Obstetric Triage Decision Engine & SNOMED CT Mapping  │
+│  - RED: Immediate referral to CEmONC / Call 112        │
+│  - YELLOW: Urgent review at Primary Health Center      │
+│  - GREEN: Guideline-approved remedies & ANC schedule   │
+└────────────────┬───────────────────────────────────────┘
+                 │
+                 ▼
+[ Formatted Clinical Guidance with Evidence Citations Delivered to Mother ]
 ```
 
 ---
 
-## Getting Started
+## 📂 Maternal Knowledge Base (RAG)
+
+The knowledge base is authored in high-yield, structured Markdown documents under `storage/guidelines_md/` and indexed into `storage/maternal_rag.db` using SQLite FTS5 for sub-millisecond retrieval:
+
+* **`who_antenatal_care.md`**: WHO 8-contact model, daily Iron (60mg) + Folic Acid (400µg), calcium supplementation, and physiological relief for morning sickness (ginger, small frequent meals), heartburn, backache, and constipation.
+* **`who_obstetric_emergencies_impac.md`**: Triage algorithms for antepartum hemorrhage (placenta previa, abruption), pre-eclampsia/eclampsia management (Magnesium Sulfate protocols), maternal sepsis, and reduced fetal movement.
+* **`nigeria_fmoh_maternal_guidelines.md`**: National malaria in pregnancy protocol (IPTp-SP schedule from 13 weeks), Tetanus Toxoid immunization (TT1–TT5), anemia prevention with indigenous foods (Ugwu, spinach, citrus), and Birth Preparedness and Complication Readiness (BPCR).
+* **`who_intrapartum_and_postnatal.md`**: True vs. false labor, active management of third stage of labor (Oxytocin 10 IU for PPH prevention), and postnatal maternal danger signs.
+
+---
+
+## 🚀 Getting Started
 
 ### 1. Prerequisites
-* **Python 3.11+** installed.
-* **FFmpeg** installed and accessible in your system `PATH` (for audio decoding).
-  * *Windows:* `winget install Gyan.FFmpeg`
-  * *Ubuntu/Debian:* `sudo apt-get install ffmpeg`
-  * *macOS:* `brew install ffmpeg`
+* Python 3.11+ or 3.14+
+* FFmpeg (for audio transcoding)
 
 ### 2. Installation
-Clone the repository and set up a virtual environment:
-
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/afyavoice.git
-cd afyavoice
-
-# Create virtual environment
-python -m venv venv
+git clone https://github.com/Godswillamos0/Afya-voice.git
+cd "Afya voice"
 
 # Activate virtual environment
-# Windows (PowerShell):
-.\venv\Scripts\Activate.ps1
-# Linux / macOS:
-source venv/bin/activate
+.\venv\Scripts\activate   # On Windows
+source venv/bin/activate  # On Linux/macOS
 
 # Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Environment Configuration (`.env`)
-Create a `.env` file in the root directory:
-
+### 3. Environment Setup
+Create or update your `.env` file:
 ```env
-# 1. Meta WhatsApp Cloud API Credentials
-META_ACCESS_TOKEN="your_meta_system_user_or_temporary_token"
-META_PHONE_NUMBER_ID="your_meta_phone_number_id"
-META_API_VERSION="v25.0"
-WHATSAPP_VERIFY_TOKEN="afyavoice_secure_verify_token"
+# 1. Telegram Bot Credentials (obtain from @BotFather in 30 seconds)
+TELEGRAM_BOT_TOKEN="your_telegram_bot_token"
 
-# 2. Database Connection (SQLite default, or PostgreSQL)
+# 2. Database Connection (SQLite default)
 DATABASE_URL="sqlite:///./afyavoice.db"
 
-# 3. N-ATLaS Sovereign AI (Hugging Face)
-NATLAS_API_KEY="your_hugging_face_access_token_hf_xxx"
+# 3. N-ATLaS AI Access
+NATLAS_API_KEY="your_hugging_face_token"
 NATLAS_ASR_ENDPOINT="https://api-inference.huggingface.co/models/openai/whisper-small"
 NATLAS_LLM_ENDPOINT="https://api-inference.huggingface.co/models/NCAIR1/N-ATLaS/v1/chat/completions"
 ```
 
+### 4. Build or Rebuild Maternal RAG Index
+To parse the markdown guidelines and index them into SQLite FTS5:
+```bash
+python -m services.rag.indexer
+```
+
 ---
 
-## Running the Application
+## 💻 Running the Application
 
-### Start the AfyaVoice Backend
+### Option A: Run the Telegram Bot (Local Long Polling)
+**No public tunnel or webhook needed!** Simply run:
+```bash
+python telegram_runner.py
+```
+Open Telegram, search for your bot, send `/start`, choose your gestational stage, and speak or write symptoms in any Nigerian dialect!
+
+### Option B: Run the Web Telemedicine Server
 ```bash
 python main.py
 ```
-The server will start at **`http://localhost:8000`**.
-
-### Access the Web Interfaces
-Open your browser and navigate to:
-* **Patient Landing Page**: **[http://localhost:8000/](http://localhost:8000/)** (Features the patient-facing overview, supported Nigerian dialects, clinical governance, and direct CTA to start triage)
-* **Clinical Triage Portal**: **[http://localhost:8000/portal](http://localhost:8000/portal)** (Interactive voice recording, text symptom input with quick tags, and live Manchester Triage evaluation)
-
-* Click the **Microphone** button to record a voice note in your browser or select an audio file.
-* Or use the **Type Symptoms** tab with quick-add symptom pills (Fever, Headache, Vomiting, Chest Pain).
-* Click **Assess My Symptoms Now** to receive instant Manchester Triage urgency classification, SNOMED CT clinical coding, and personalized patient care instructions.
+* **Patient Landing Page:** [http://localhost:8000/](http://localhost:8000/)
+* **Clinical Triage Portal:** [http://localhost:8000/portal](http://localhost:8000/portal)
+* **Telegram Webhook Info:** [http://localhost:8000/webhooks/telegram/info](http://localhost:8000/webhooks/telegram/info)
 
 ---
 
-## 📱 Testing with Real WhatsApp
-
-To connect real WhatsApp traffic to your local server:
-
-1. **Start Cloudflare Tunnel:**
-   ```bash
-   ./cloudflared.exe tunnel --url http://localhost:8000
-   ```
-2. **Configure Meta Webhook:**
-   * Go to **Meta for Developers** $\rightarrow$ **WhatsApp** $\rightarrow$ **Configuration**.
-   * Set **Callback URL**: `https://<your-subdomain>.trycloudflare.com/webhooks/whatsapp`
-   * Set **Verify Token**: `afyavoice_secure_verify_token`
-   * Under **Webhook fields**, click **Manage** and subscribe to **`messages`**.
-3. **Send a Voice Note:**
-   * Send a voice note from your phone to the Meta WhatsApp Test Number.
-   * AfyaVoice will ingest the voice note, process it through N-ATLaS, map the SNOMED concept, score the MTS tier, and reply directly on WhatsApp!
-
----
-
-## Clinical & Ethical Disclaimers
-* AfyaVoice is a **Clinical Decision Support & Triage Tool** designed to assist healthcare workers and prioritize patient queues. It does **not** provide final medical diagnoses or prescribe controlled medications autonomously.
-* All high-urgency **RED** cases mandate immediate physical escalation to an accredited Nigerian Emergency Department.
-* Built in alignment with **Medical and Dental Council of Nigeria (MDCN)** telemedicine ethical guidelines.
-
----
-
-## 📄 License & Attribution
-* **N-ATLaS-LLM** is powered by **Awarri Technologies** and the **Nigerian Languages AI Initiative** (Federal Ministry of Communications, Innovation and Digital Economy - FMCIDE).
-* AfyaVoice Architecture & Development © 2026. All rights reserved.
+## 📋 Clinical Standards Compliance
+* **World Health Organization (WHO):** Standards for improving quality of maternal and newborn care.
+* **Federal Ministry of Health Nigeria (FMOH):** National guidelines for Maternal, Newborn, and Child Health (MNCH).
+* **SNOMED CT:** Standardized clinical health terminology (Concepts: Pre-eclampsia `398254007`, Antepartum Haemorrhage `237244005`, Routine Antenatal Care `424441002`).
+* **Manchester Triage System (MTS):** Validated clinical urgency prioritization.
+* **NDPA / NDPC Compliant:** Complies with the Nigeria Data Protection Act.

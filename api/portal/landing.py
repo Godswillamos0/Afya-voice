@@ -5,14 +5,14 @@ landing_router = APIRouter()
 
 @landing_router.get("/", response_class=HTMLResponse)
 def get_landing_page():
-    """Serves the clean, human-centered AfyaVoice telemedicine landing page."""
+    """Serves the modern AfyaMama Maternal & Antenatal Healthcare landing page."""
     html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AfyaVoice - Healthcare Triage in Your Native Language</title>
+  <title>AfyaMama - Sovereign Maternal & Antenatal Health in Your Mother Tongue</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,10 +20,12 @@ def get_landing_page():
     :root {
       --bg: #ffffff;
       --bg-alt: #f8fafc;
-      --primary: #0f766e;
-      --primary-hover: #0d9488;
-      --primary-light: #f0fdfa;
-      --primary-subtle: #ccfbf1;
+      --primary: #be185d; /* Warm maternal rose / magenta */
+      --primary-hover: #9d174d;
+      --primary-light: #fdf2f8;
+      --primary-subtle: #fbcfe8;
+      --teal: #0f766e;
+      --teal-light: #f0fdfa;
       --text-main: #0f172a;
       --text-muted: #475569;
       --text-light: #64748b;
@@ -33,8 +35,8 @@ def get_landing_page():
       --radius-md: 14px;
       --radius-lg: 20px;
       --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 16px -2px rgba(15, 118, 110, 0.08);
-      --shadow-lg: 0 12px 30px -4px rgba(15, 118, 110, 0.12);
+      --shadow-md: 0 4px 16px -2px rgba(190, 24, 93, 0.08);
+      --shadow-lg: 0 12px 30px -4px rgba(190, 24, 93, 0.12);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -66,22 +68,29 @@ def get_landing_page():
       color: var(--text-main);
     }
     .logo-badge {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: var(--primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #fb7185);
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.15rem;
+      font-size: 1.25rem;
     }
     .brand-title {
       font-weight: 800;
       font-size: 1.25rem;
       color: var(--primary);
       letter-spacing: -0.02em;
+    }
+    .brand-sub {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: block;
+      margin-top: -3px;
     }
     .nav-links {
       display: flex;
@@ -97,6 +106,27 @@ def get_landing_page():
       transition: color 0.15s;
     }
     .nav-links a:hover { color: var(--primary); }
+    
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .btn-telegram {
+      background: #0284c7;
+      color: #fff;
+      padding: 0.65rem 1.15rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .btn-telegram:hover { background: #0369a1; transform: translateY(-1px); }
+    
     .btn-header-cta {
       background: var(--primary);
       color: #fff;
@@ -173,13 +203,12 @@ def get_landing_page():
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      box-shadow: 0 4px 14px rgba(15, 118, 110, 0.25);
+      box-shadow: 0 4px 14px rgba(190, 24, 93, 0.25);
     }
     .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
     .btn-secondary {
-      background: #fff;
-      color: var(--text-main);
-      border: 1px solid var(--border);
+      background: #0284c7;
+      color: #fff;
       padding: 0.95rem 1.65rem;
       border-radius: 12px;
       text-decoration: none;
@@ -190,7 +219,7 @@ def get_landing_page():
       gap: 0.5rem;
       transition: all 0.2s;
     }
-    .btn-secondary:hover { background: var(--bg-alt); border-color: #cbd5e1; }
+    .btn-secondary:hover { background: #0369a1; }
 
     /* HERO MOCKUP CARD */
     .hero-card {
@@ -214,13 +243,13 @@ def get_landing_page():
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: #0284c7;
-      color: #fff;
+      background: var(--primary-light);
+      color: var(--primary);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 1.2rem;
     }
     .doctor-name { font-size: 0.95rem; font-weight: 800; color: var(--text-main); }
     .doctor-status { font-size: 0.75rem; color: #16a34a; font-weight: 600; display: flex; align-items: center; gap: 0.3rem; }
@@ -240,14 +269,15 @@ def get_landing_page():
     }
     .bubble-patient {
       align-self: flex-end;
-      background: #f1f5f9;
+      background: #fdf2f8;
+      border: 1px solid var(--primary-subtle);
       color: var(--text-main);
       border-bottom-right-radius: 2px;
     }
     .bubble-bot {
       align-self: flex-start;
-      background: var(--primary-light);
-      border: 1px solid var(--primary-subtle);
+      background: #f0fdfa;
+      border: 1px solid #ccfbf1;
       color: #0f766e;
       border-bottom-left-radius: 2px;
     }
@@ -260,15 +290,15 @@ def get_landing_page():
       border-top: 1px dashed var(--border);
       font-size: 0.78rem;
     }
-    .badge-triage-green {
-      background: #dcfce7;
-      color: #166534;
+    .badge-triage-red {
+      background: #fee2e2;
+      color: #991b1b;
       padding: 0.25rem 0.65rem;
       border-radius: 9999px;
       font-weight: 700;
     }
 
-    /* HOW IT WORKS SECTION */
+    /* SECTION */
     .section {
       max-width: 1240px;
       margin: 0 auto;
@@ -321,70 +351,50 @@ def get_landing_page():
     .step-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.65rem; color: var(--text-main); }
     .step-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.55; }
 
-    /* LANGUAGE CAROUSEL SECTION */
-    .lang-bar {
+    /* GUIDELINES RAG SECTION */
+    .rag-section {
       background: var(--bg-alt);
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      padding: 3rem 1.5rem;
-      text-align: center;
+      padding: 4rem 1.5rem;
     }
-    .lang-grid {
-      max-width: 1000px;
-      margin: 1.5rem auto 0;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-    }
-    .lang-card {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 0.85rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      box-shadow: var(--shadow-sm);
-    }
-    .lang-flag { font-size: 1.25rem; }
-
-    /* STANDARDS & CLINICAL SAFETY */
-    .standards-grid {
+    .guideline-cards-grid {
+      max-width: 1240px;
+      margin: 2rem auto 0;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
-      margin-top: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
     }
-    @media (max-width: 768px) { .standards-grid { grid-template-columns: 1fr; } }
-    .standard-box {
+    .guideline-box {
       background: #ffffff;
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      padding: 1.75rem;
-      display: flex;
-      gap: 1.25rem;
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
     }
-    .standard-icon {
-      font-size: 2rem;
-      line-height: 1;
+    .guideline-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: var(--teal-light);
+      color: var(--teal);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 0.65rem;
     }
-    .standard-box h4 { font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem; }
-    .standard-box p { font-size: 0.88rem; color: var(--text-muted); }
+    .guideline-box h4 { font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem; }
+    .guideline-box p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
 
     /* CTA BANNER */
     .cta-banner {
-      background: linear-gradient(135deg, #0f766e, #0d9488);
+      background: linear-gradient(135deg, var(--primary), #be185d);
       border-radius: var(--radius-lg);
       padding: 3.5rem 2rem;
       text-align: center;
       color: #ffffff;
       margin: 4rem auto;
       max-width: 1100px;
-      box-shadow: 0 10px 30px rgba(15, 118, 110, 0.2);
+      box-shadow: 0 10px 30px rgba(190, 24, 93, 0.2);
     }
     .cta-banner h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.75rem; }
     .cta-banner p { font-size: 1.05rem; opacity: 0.92; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; }
@@ -419,35 +429,41 @@ def get_landing_page():
   <!-- TOP NAVBAR -->
   <nav>
     <a href="/" class="brand-logo">
-      <div class="logo-badge">AV</div>
-      <div class="brand-title">AfyaVoice</div>
+      <div class="logo-badge">AM</div>
+      <div>
+        <div class="brand-title">AfyaMama</div>
+        <span class="brand-sub">Sovereign Maternal Care</span>
+      </div>
     </a>
     <ul class="nav-links">
       <li><a href="#how-it-works">How It Works</a></li>
-      <li><a href="#languages">Languages</a></li>
-      <li><a href="#clinical-safety">Clinical Safety</a></li>
-      <li><a href="#standards">Medical Standards</a></li>
+      <li><a href="#guidelines">WHO & Nigeria Guidelines</a></li>
+      <li><a href="#danger-signs">Obstetric Danger Signs</a></li>
+      <li><a href="/portal">Web Portal</a></li>
     </ul>
-    <a href="/portal" class="btn-header-cta">Launch Triage Portal →</a>
+    <div class="nav-actions">
+      <a href="https://t.me/afyavoice_bot" target="_blank" class="btn-telegram">📱 Telegram Bot</a>
+      <a href="/portal" class="btn-header-cta">Launch Triage Portal →</a>
+    </div>
   </nav>
 
   <!-- HERO SECTION -->
   <section class="hero">
     <div>
       <div class="tag-pill">
-        <span>🇳🇬</span> Sovereign Healthcare Triage for Nigeria
+        <span>🤰</span> Dedicated Maternal & Antenatal Healthcare for Nigeria
       </div>
-      <h1>Healthcare triage in your <span>mother tongue</span>.</h1>
+      <h1>Safe pregnancy care in your <span>mother tongue</span>.</h1>
       <p class="hero-lead">
-        Speak or type symptoms in <strong>Yoruba, Hausa, Igbo, Nigerian Pidgin, or English</strong>. Receive validated clinical urgency assessment, home remedy guidance, or immediate emergency doctor referral in seconds.
+        Speak or type symptoms in <strong>Yorùbá, Hausa, Igbo, Nigerian Pidgin, or English</strong>. Receive instant, evidence-based triage and care advice powered by <strong>WHO Antenatal Guidelines</strong> and <strong>FMOH Nigeria Maternal Health Protocols</strong>.
       </p>
       <div class="cta-group">
         <a href="/portal" class="btn-primary">
           <span>Start Consultation (Free)</span>
           <span>→</span>
         </a>
-        <a href="#how-it-works" class="btn-secondary">
-          <span>Explore How It Works</span>
+        <a href="https://t.me/afyavoice_bot" target="_blank" class="btn-secondary">
+          <span>Chat on Telegram 📱</span>
         </a>
       </div>
     </div>
@@ -457,135 +473,120 @@ def get_landing_page():
       <div class="hero-card">
         <div class="hero-card-header">
           <div class="doctor-avatar-group">
-            <div class="avatar-circle">AV</div>
+            <div class="avatar-circle">🤰</div>
             <div>
-              <div class="doctor-name">AfyaVoice Clinical Assistant</div>
-              <div class="doctor-status"><span class="status-dot"></span> Online • MDCN Protocol Active</div>
+              <div class="doctor-name">AfyaMama Clinical Assistant</div>
+              <div class="doctor-status"><span class="status-dot"></span> Online • WHO & FMOH Protocol Active</div>
             </div>
           </div>
-          <span style="font-size: 0.75rem; background: #f1f5f9; padding: 0.25rem 0.55rem; border-radius: 6px; font-weight: 700; color: #475569;">Ticket #NG-2041</span>
+          <span style="font-size: 0.75rem; background: #fdf2f8; padding: 0.25rem 0.55rem; border-radius: 6px; font-weight: 700; color: #be185d;">3rd Trimester</span>
         </div>
 
         <div class="chat-preview">
           <div class="bubble bubble-patient">
-            🎙️ <em>"Ara mi n gbona ti n si n bi leralera lati ana..."</em>
-            <div style="font-size: 0.72rem; color: #64748b; margin-top: 0.3rem;">Yoruba Dialect • Patient Voice Note</div>
+            🎙️ <em>"Ori n fo mi gidigidi, oju mi n dudu ti ese mi si n wu lati ana..."</em>
+            <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 0.3rem;">Yoruba Dialect • Patient Voice Note</div>
           </div>
           <div class="bubble bubble-bot">
-            <strong>🏥 Clinical Assessment:</strong>
-            <br>• <strong>Primary Finding:</strong> Fever & Persistent Vomiting
-            <br>• <strong>Urgency Level:</strong> 🟡 Urgent (Review within 12–24h)
-            <br>• <strong>Immediate Step:</strong> Hydrate with ORS clean water and visit your primary clinic today.
+            <strong>⚠️ CRITICAL OBSTETRIC ALERT:</strong>
+            <br>• <strong>Primary Risk:</strong> Pre-Eclampsia / Impending Eclampsia
+            <br>• <strong>Urgency Level:</strong> 🔴 Obstetric Emergency
+            <br>• <strong>Evidence (WHO ANC Guideline):</strong> Severe persistent headache + visual disturbances requires immediate hospital BP evaluation & Magnesium Sulfate protocol.
+            <br>• <strong>Action:</strong> Proceed to nearest General Hospital immediately. Call <strong>112</strong>.
           </div>
         </div>
 
         <div class="triage-tag-row">
-          <span class="badge-triage-green">✓ Manchester Triage Verified</span>
-          <span style="font-family: monospace; font-size: 0.75rem; color: var(--text-light);">SNOMED CT: 386661006</span>
+          <span class="badge-triage-red">🚨 Obstetric Emergency</span>
+          <span style="font-family: monospace; font-size: 0.75rem; color: var(--text-light);">SNOMED CT: 398254007</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- NATIVE LANGUAGES BANNER -->
-  <section class="lang-bar" id="languages">
-    <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">Linguistic Inclusion by Design</div>
-    <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 0.35rem;">Supported Sovereign Dialects</h2>
-    <div class="lang-grid">
-      <div class="lang-card"><span class="lang-flag">🟢</span> Yorùbá (Èdè Yorùbá)</div>
-      <div class="lang-card"><span class="lang-flag">🟢</span> Hausa (Harshen Hausa)</div>
-      <div class="lang-card"><span class="lang-flag">🟢</span> Igbo (Asụsụ Igbo)</div>
-      <div class="lang-card"><span class="lang-flag">🟢</span> Nigerian Pidgin (Naija)</div>
-      <div class="lang-card"><span class="lang-flag">🟢</span> Nigerian English</div>
+  <!-- WHO & FMOH GUIDELINES RAG SECTION -->
+  <section class="rag-section" id="guidelines">
+    <div class="section-header">
+      <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">Evidence-Based Maternal Knowledge</div>
+      <h2 class="section-title">Integrated Clinical Guidelines (RAG)</h2>
+      <p class="section-sub">Every piece of maternal advice is retrieved directly from authoritative clinical guidelines.</p>
+    </div>
+
+    <div class="guideline-cards-grid">
+      <div class="guideline-box">
+        <span class="guideline-badge">WHO Standard</span>
+        <h4>Antenatal Care for Positive Pregnancy</h4>
+        <p>The WHO 8-contact model, nutritional recommendations (Iron 60mg + Folic Acid 400µg), and relief for physiological symptoms (morning sickness, heartburn, cramps).</p>
+      </div>
+
+      <div class="guideline-box">
+        <span class="guideline-badge">Nigeria FMOH</span>
+        <h4>Nigeria Maternal & Newborn Protocols</h4>
+        <p>National guidelines for Malaria in Pregnancy (IPTp-SP schedule from 13 weeks), Tetanus Toxoid (TT1-TT5), and Birth Preparedness and Complication Readiness (BPCR).</p>
+      </div>
+
+      <div class="guideline-box">
+        <span class="guideline-badge">WHO IMPAC</span>
+        <h4>Emergency Obstetric Danger Signs</h4>
+        <p>Life-saving algorithms for Antepartum Haemorrhage (Placenta Praevia, Abruption), Severe Pre-Eclampsia, Eclampsia, Cord Prolapse, and Puerperal Sepsis.</p>
+      </div>
+
+      <div class="guideline-box">
+        <span class="guideline-badge">WHO Intrapartum</span>
+        <h4>Labor & Postnatal Care Experience</h4>
+        <p>True labor vs. Braxton Hicks distinction, respectful maternity care, Oxytocin 10 IU for PPH prevention, exclusive breastfeeding, and newborn cord care.</p>
+      </div>
     </div>
   </section>
 
   <!-- HOW IT WORKS SECTION -->
   <section class="section" id="how-it-works">
     <div class="section-header">
-      <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">Streamlined Patient Journey</div>
-      <h2 class="section-title">How AfyaVoice Works</h2>
-      <p class="section-sub">From your spoken voice note to verified clinical decision support in 3 simple steps.</p>
+      <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">Step-by-Step Care</div>
+      <h2 class="section-title">How AfyaMama Protects Mothers</h2>
+      <p class="section-sub">From spoken mother-tongue symptom to verified clinical obstetric triage in seconds.</p>
     </div>
 
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num">1</div>
-        <h3>Describe Symptoms</h3>
-        <p>Record a short voice note or type how you feel in your natural dialect. No complex medical terms needed.</p>
+        <h3>Select Trimester & Speak</h3>
+        <p>Select your stage (1st, 2nd, 3rd Trimester or Postpartum) and speak or write in Yoruba, Hausa, Igbo, Pidgin, or English.</p>
       </div>
 
       <div class="step-card">
         <div class="step-num">2</div>
-        <h3>Sovereign AI Understanding</h3>
-        <p>Powered by Nigeria's <strong>N-ATLaS-LLM</strong>, your words are translated and standardized using international <strong>SNOMED CT</strong> concept codes.</p>
+        <h3>RAG Clinical Retrieval</h3>
+        <p>Our in-process SQLite RAG engine instantly matches your symptoms against indexed WHO and Nigerian Health Guidelines.</p>
       </div>
 
       <div class="step-card">
         <div class="step-num">3</div>
-        <h3>Manchester Clinical Triage</h3>
-        <p>Deterministic triage algorithms classify urgency into Red (Emergency), Yellow (Urgent), or Green (Routine) with actionable care guidance.</p>
+        <h3>Evidence-Based Action Plan</h3>
+        <p>Receive clear emergency classification (Red/Yellow/Green), SNOMED CT clinical coding, and step-by-step home care guidance.</p>
       </div>
     </div>
   </section>
 
-  <!-- MEDICAL STANDARDS SECTION -->
-  <section class="section" id="standards" style="padding-top: 0;">
-    <div class="section-header">
-      <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">Clinical Rigor</div>
-      <h2 class="section-title">Built on Healthcare Standards</h2>
-      <p class="section-sub">Empowering patient safety with globally recognized protocols and regulatory alignment.</p>
-    </div>
-
-    <div class="standards-grid">
-      <div class="standard-box">
-        <div class="standard-icon">🏥</div>
-        <div>
-          <h4>Manchester Triage System (MTS)</h4>
-          <p>Standardized 52-flowchart clinical urgency matrix ensuring life-threatening conditions are escalated immediately to emergency care.</p>
-        </div>
-      </div>
-
-      <div class="standard-box">
-        <div class="standard-icon">🌐</div>
-        <div>
-          <h4>SNOMED CT Terminology</h4>
-          <p>Universal medical ontology mapping colloquial indigenous phrases into global clinical concept IDs for seamless healthcare interoperability.</p>
-        </div>
-      </div>
-
-      <div class="standard-box">
-        <div class="standard-icon">🇳🇬</div>
-        <div>
-          <h4>MDCN Telemedicine Guidelines</h4>
-          <p>Engineered strictly in compliance with Medical and Dental Council of Nigeria (MDCN) ethical telemedicine protocols.</p>
-        </div>
-      </div>
-
-      <div class="standard-box">
-        <div class="standard-icon">🔒</div>
-        <div>
-          <h4>NDPA / NDPC Data Privacy</h4>
-          <p>Compliant with the Nigeria Data Protection Act. Patient phone numbers and consultation logs are encrypted and hashed.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- CTA BANNER -->
-    <div class="cta-banner">
-      <h2>Ready to start your consultation?</h2>
-      <p>Try our voice-first clinical triage right in your browser or connect directly with our WhatsApp assistant.</p>
+  <!-- CTA BANNER -->
+  <div class="cta-banner">
+    <h2>Access Safe Maternal Healthcare Today</h2>
+    <p>Check your symptoms now using our web portal or chat with our 24/7 assistant directly on Telegram.</p>
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
       <a href="/portal" class="btn-cta-white">
         <span>Launch Triage Portal</span>
         <span>→</span>
       </a>
+      <a href="https://t.me/afyavoice_bot" target="_blank" class="btn-cta-white" style="background: #0284c7; color: #fff;">
+        <span>Open Telegram Bot 📱</span>
+      </a>
     </div>
-  </section>
+  </div>
 
   <!-- FOOTER -->
   <footer>
-    <div style="margin-bottom: 0.5rem; font-weight: 700; color: var(--primary);">AfyaVoice Sovereign Telemedicine Platform</div>
-    <div>Powered by N-ATLaS-LLM • Developed in partnership with Nigerian Languages AI Initiative • © 2026 AfyaVoice. All rights reserved.</div>
+    <div style="margin-bottom: 0.5rem; font-weight: 700; color: var(--primary);">AfyaMama • Dedicated Sovereign Maternal Health Platform</div>
+    <div>Powered by WHO Antenatal Care Guidelines & Federal Ministry of Health Nigeria Protocols • © 2026. All rights reserved.</div>
   </footer>
 
 </body>

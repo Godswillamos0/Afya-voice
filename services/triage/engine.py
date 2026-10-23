@@ -12,15 +12,16 @@ class TriageAssessment:
     urgency_description: str
     action_plan: str
     patient_message: str
-    snomed_concept_code: str       # Primary SNOMED CT Concept ID (e.g., 29857009)
+    snomed_concept_code: str       # Primary SNOMED CT Concept ID
     snomed_display_name: str       # Official Clinical Display Name
     discriminators_triggered: List[str] = field(default_factory=list)
+    guideline_source: str = "WHO / Nigeria FMOH Guidelines"
 
 class TriageEngine:
     """
-    Enterprise Clinical Decision Support Engine.
-    Combines the Manchester Triage System (MTS) protocol matrix with 
-    SNOMED CT clinical concept mapping, replacing hardcoded string checks.
+    Sovereign Maternal Clinical Decision Support Engine.
+    Evaluates obstetric risk using the Manchester Triage System (MTS) adapted for
+    WHO Integrated Management of Pregnancy & Childbirth (PCPNC) and FMOH Nigeria Maternal Guidelines.
     """
 
     def __init__(self):
@@ -30,81 +31,114 @@ class TriageEngine:
             with open(config_path, "r", encoding="utf-8") as f:
                 self.protocols = json.load(f)
 
-    def evaluate(self, clinical_data: ClinicalExtraction, patient_name: str = "Patient") -> TriageAssessment:
+    def evaluate(self, clinical_data: ClinicalExtraction, patient_name: str = "Mama") -> TriageAssessment:
         complaint = clinical_data.chief_complaint or ""
         symptoms = clinical_data.symptoms or []
-        combined_text = f"{complaint} {' '.join(symptoms)}"
+        combined_text = f"{complaint} {' '.join(symptoms)} {' '.join(clinical_data.danger_signs)}"
         severity = (clinical_data.severity or "Moderate").title()
+        stage = clinical_data.gestational_stage or "Pregnancy"
 
-        # Step 1: Map patient complaint into standardized SNOMED CT concepts
+        # Step 1: Map to standardized SNOMED CT concepts
         matched_concepts = SNOMEDRegistry.resolve_symptoms(combined_text)
 
-        # Fallback if no specific concept matched
         if not matched_concepts:
             primary_snomed = SNOMEDConcept(
-                concept_id="367391008",
-                fsn="Malaise (finding)",
-                display_name="General Malaise",
-                mts_discriminator="GENERAL_MALAISE",
+                concept_id="424441002",
+                fsn="Antenatal care (procedure)",
+                display_name="Routine Antenatal Care (ANC)",
+                mts_discriminator="ROUTINE_CARE",
                 default_tier="GREEN"
             )
             matched_concepts = [primary_snomed]
         else:
             primary_snomed = matched_concepts[0]
 
-        # Step 2: Evaluate Manchester Triage System Priority Matrix
-        # Hierarchy: RED (Priority 1) > YELLOW (Priority 2) > GREEN (Priority 3) > WHITE (Priority 4)
-        has_red = any(c.default_tier == "RED" for c in matched_concepts)
-        has_yellow = any(c.default_tier == "YELLOW" for c in matched_concepts)
+        # Step 2: Obstetric Danger Signs Assessment
+        has_red = False
+        has_yellow = False
 
-        # Upgrade to RED if severe respiratory or severe chest indicators present
-        if severity == "Severe" and any(c.concept_id in ["267036007", "29857009"] for c in matched_concepts):
+        # Cardinal Obstetric Danger Signs are ALWAYS RED in pregnancy
+        if clinical_data.danger_signs:
+            has_red = True
+
+        for c in matched_concepts:
+            if c.default_tier == "RED":
+                has_red = True
+            elif c.default_tier == "YELLOW":
+                has_yellow = True
+
+        # Severe headache, severe chest pain, or bleeding in pregnancy is RED
+        if severity == "Severe" and any(w in combined_text.lower() for w in ["headache", "ori fifo", "bleed", "eje", "fever", "cramp"]):
             has_red = True
 
         triggered_discriminators = [c.mts_discriminator for c in matched_concepts]
+        if clinical_data.danger_signs:
+            triggered_discriminators.extend(clinical_data.danger_signs)
 
-        # Determine Triage Tier from MTS Matrix
+        # Step 3: Determine Urgency Tier
         if has_red:
             tier = "RED"
-            title = "🔴 EMERGENCY (IMMEDIATE HOSPITAL ATTENTION REQUIRED)"
-            desc = "Life-threatening Manchester Triage discriminators identified."
-            action = "Proceed immediately to the nearest Emergency Center or call Nigeria Emergency (112)."
-        elif has_yellow or severity == "Severe":
+            title = "🔴 OBSTETRIC EMERGENCY (IMMEDIATE HOSPITAL ATTENTION)"
+            desc = "Life-threatening obstetric danger signs identified requiring urgent emergency care."
+            action = "Proceed immediately to the nearest General Hospital, CEmONC Maternity Center, or call Emergency (112)."
+        elif has_yellow:
             tier = "YELLOW"
-            title = "🟡 URGENT (CLINICAL REVIEW WITHIN 12-24 HOURS)"
-            desc = "Urgent clinical flags requiring evaluation at a Primary Health Care center today."
-            action = "Visit a registered Primary Health Care (PHC) center or hospital within 12-24 hours for examination."
+            title = "🟡 URGENT MATERNAL REVIEW (WITHIN 12–24 HOURS)"
+            desc = "Clinical symptoms requiring prompt medical evaluation at your registered Primary Health Center."
+            action = "Visit your Primary Health Center (PHC) or antenatal clinic today for clinical examination."
         else:
             tier = "GREEN"
-            title = "🟢 ROUTINE / PRIMARY CARE"
-            desc = "Standard non-emergency symptoms suitable for outpatient consultation."
-            action = "Schedule a routine teleconsultation or visit your local community dispensary."
+            title = "🟢 ROUTINE ANTENATAL CARE & HOME GUIDANCE"
+            desc = "Common physiological pregnancy symptoms or routine antenatal inquiry."
+            action = "Continue your regular antenatal visits, take prescribed routine supplements, and monitor your symptoms."
 
-        # Generate Clinical Message with Standardized SNOMED CT and MTS Metadata
+        # Step 4: Construct Patient Communication Message with Guideline Citations
         symptom_list_str = ", ".join(clinical_data.symptoms) if clinical_data.symptoms else clinical_data.chief_complaint
         
         message = (
-            f"🏥 *AfyaVoice Clinical Triage Report*\n"
+            f"🤰 *AfyaMama Maternal Triage & Care Plan*\n"
             f"━━━━━━━━━━━━━━━━━━\n"
-            f"⚠️ *URGENCY LEVEL: {title.split(' ')[0]} {tier}*\n\n"
+            f"⚠️ *URGENCY LEVEL:* {title}\n"
+            f"⏱ *Stage:* {stage} • *Onset:* {clinical_data.duration}\n\n"
             f"📋 *Clinical Findings:*\n"
-            f"• *Chief Complaint:* {clinical_data.chief_complaint}\n"
+            f"• *Chief Issue:* {clinical_data.chief_complaint}\n"
             f"• *Reported Symptoms:* {symptom_list_str}\n"
-            f"• *Duration:* {clinical_data.duration or 'Not specified'}\n"
-            f"• *Severity:* {severity}\n"
-            f"• *SNOMED CT Term:* {primary_snomed.display_name} (`{primary_snomed.concept_id}`)\n\n"
-            f"🩺 *CLINICAL ACTION PLAN:*\n"
-            f"{action}\n\n"
+            f"• *SNOMED CT Concept:* {primary_snomed.display_name} (`{primary_snomed.concept_id}`)\n\n"
         )
 
-        if tier == "RED":
-            message += f"🚨 *URGENT WARNING:* Do not delay. If you are alone, alert a family member, neighbor, or call Nigeria Emergency (*112*) immediately.\n\n"
-        elif tier == "YELLOW":
-            message += f"💧 *Immediate Self-Care Steps:*\n• Stay well-hydrated with clean water or ORS.\n• Rest in a well-ventilated room.\n• If symptoms suddenly worsen, seek emergency care immediately.\n\n"
-        else:
-            message += f"🍵 *Home Care Guidance:*\n• Ensure adequate hydration and rest.\n• Monitor symptoms over the next 24-48 hours.\n• If high fever or intense pain develops, visit your nearest clinic.\n\n"
+        if clinical_data.danger_signs:
+            danger_str = "\n".join([f"  ⚠️ {d}" for d in clinical_data.danger_signs])
+            message += f"🚨 *CRITICAL OBSTETRIC DANGER SIGNS DETECTED:*\n{danger_str}\n\n"
 
-        message += f"_MTS Protocol Standard • SNOMED CT Indexed • Powered by N-ATLAS Sovereign AI_"
+        message += f"🩺 *RECOMMENDED CLINICAL ACTION:*\n{action}\n\n"
+
+        # Evidence-Based Care Guidance & Remedies based on WHO / Nigeria Guidelines
+        if tier == "RED":
+            message += (
+                f"🚨 *CRITICAL INSTRUCTIONS:*\n"
+                f"• Do NOT take any home remedies or wait until tomorrow.\n"
+                f"• Lie on your left side to maximize blood flow to your baby.\n"
+                f"• Have a companion accompany you immediately to the nearest hospital with an emergency obstetric unit.\n"
+                f"• Emergency Hotline: Call *112* immediately.\n\n"
+            )
+        elif tier == "YELLOW":
+            message += (
+                f"💧 *Immediate Care Steps (WHO & FMOH Nigeria Guidelines):*\n"
+                f"• Hydrate with clean boiled water or Oral Rehydration Salts (ORS).\n"
+                f"• Rest in a cool, well-ventilated room.\n"
+                f"• If you have fever, take only Paracetamol (avoid Ibuprofen or Aspirin).\n"
+                f"• Visit your PHC clinic today for malaria check and blood pressure measurement.\n\n"
+            )
+        else:
+            message += (
+                f"🌿 *Guideline-Approved Home Relief (WHO Antenatal Care Standards):*\n"
+                f"• *For Morning Sickness / Nausea:* Eat small frequent meals rich in complex carbohydrates (dry crackers, boiled yam/sweet potatoes). Ginger tea or fresh ginger root is safe and effective.\n"
+                f"• *For Mild Body Ache:* Rest with feet elevated; use paracetamol if needed.\n"
+                f"• *Routine Supplements:* Remember your daily Iron (60 mg) + Folic Acid (400 µg) with clean water or citrus juice (avoid taking with tea, coffee, or milk).\n"
+                f"• Sleep under your Long-Lasting Insecticide-Treated Net (LLIN) every night.\n\n"
+            )
+
+        message += f"📚 _Standard: WHO Antenatal & Emergency Obstetric Care • Nigeria FMOH MNCH Protocols • SNOMED CT_"
 
         return TriageAssessment(
             urgency_tier=tier,
@@ -114,5 +148,6 @@ class TriageEngine:
             patient_message=message,
             snomed_concept_code=primary_snomed.concept_id,
             snomed_display_name=primary_snomed.display_name,
-            discriminators_triggered=triggered_discriminators
+            discriminators_triggered=triggered_discriminators,
+            guideline_source="WHO Antenatal & Nigeria FMOH Guidelines"
         )

@@ -14,7 +14,9 @@ ENV/
 *.sqlite
 *.sqlite3
 *.log
-storage/
+storage/*
+!storage/guidelines_md/
+storage/books/
 storage/audio/
 storage/temp_uploads/
 

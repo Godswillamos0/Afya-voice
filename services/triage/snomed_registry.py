@@ -68,6 +68,82 @@ class SNOMEDRegistry:
             aliases=["stroke", "paralysis", "face drooping", "one side weak", "apakan ara ro", "shanyewar jiki"]
         ),
 
+        # MATERNAL OBSTETRIC EMERGENCY CONCEPTS (RED)
+        SNOMEDConcept(
+            concept_id="398254007",
+            fsn="Pre-eclampsia (disorder)",
+            display_name="Pre-Eclampsia / Hypertensive Crisis",
+            mts_discriminator="PRE_ECLAMPSIA_EMERGENCY",
+            default_tier="RED",
+            aliases=["pre-eclampsia", "preeclampsia", "high bp in pregnancy", "swollen face headache", "protein in urine", "ori fifo blurred vision", "severe headache pregnant", "severe headache pregnancy"]
+        ),
+        SNOMEDConcept(
+            concept_id="39785002",
+            fsn="Eclampsia (disorder)",
+            display_name="Eclampsia / Obstetric Convulsion",
+            mts_discriminator="ACTIVE_CONVULSION",
+            default_tier="RED",
+            aliases=["eclampsia", "pregnancy convulsion", "fitting in pregnancy", "warapa nigba oyun", "farfadiya lokacin ciki", "convulsion pregnant"]
+        ),
+        SNOMEDConcept(
+            concept_id="237244005",
+            fsn="Antepartum haemorrhage (disorder)",
+            display_name="Antepartum Haemorrhage / Vaginal Bleeding",
+            mts_discriminator="EXSANGUINATING_HEMORRHAGE",
+            default_tier="RED",
+            aliases=["antepartum haemorrhage", "bleeding in pregnancy", "vaginal bleeding", "vaginal bleeding pregnancy", "eje n jade", "zubar jini ciki", "spotting blood pregnant", "blood dey come out pregnant", "blood dey rush pregnant"]
+        ),
+        SNOMEDConcept(
+            concept_id="276369006",
+            fsn="Decreased fetal movements (finding)",
+            display_name="Decreased / Absent Fetal Movement",
+            mts_discriminator="FETAL_DISTRESS_EMERGENCY",
+            default_tier="RED",
+            aliases=["decreased fetal movements", "baby not moving", "baby stop kicking", "pikin no dey kick", "omo o gbon", "jariri baya motsi", "nwa adighi agba", "no baby movement"]
+        ),
+        SNOMEDConcept(
+            concept_id="276634005",
+            fsn="Postpartum haemorrhage (disorder)",
+            display_name="Postpartum Haemorrhage (PPH)",
+            mts_discriminator="EXSANGUINATING_HEMORRHAGE",
+            default_tier="RED",
+            aliases=["postpartum haemorrhage", "pph", "heavy bleeding after birth", "bleeding after delivery", "soaking pads after birth"]
+        ),
+        SNOMEDConcept(
+            concept_id="50125004",
+            fsn="Puerperal sepsis (disorder)",
+            display_name="Puerperal Sepsis / Postnatal Infection",
+            mts_discriminator="SEPTIC_SHOCK_RISK",
+            default_tier="RED",
+            aliases=["puerperal sepsis", "fever after delivery", "foul discharge after birth", "infection after delivery", "bad smell lochia"]
+        ),
+
+        # MATERNAL URGENT & ROUTINE CONCEPTS
+        SNOMEDConcept(
+            concept_id="55630006",
+            fsn="Hyperemesis gravidarum (disorder)",
+            display_name="Hyperemesis Gravidarum",
+            mts_discriminator="PERSISTENT_VOMITING_DEHYDRATION",
+            default_tier="YELLOW",
+            aliases=["hyperemesis", "hyperemesis gravidarum", "cannot retain food", "vomiting everything pregnant", "eebi asekara oyun", "severe morning sickness"]
+        ),
+        SNOMEDConcept(
+            concept_id="37920005",
+            fsn="Nausea and vomiting in pregnancy (finding)",
+            display_name="Physiological Morning Sickness",
+            mts_discriminator="MILD_SYMPTOM",
+            default_tier="GREEN",
+            aliases=["morning sickness", "mild nausea pregnancy", "feeling sick pregnant", "eebi aro", "tashin zuciya", "nausea in morning"]
+        ),
+        SNOMEDConcept(
+            concept_id="424441002",
+            fsn="Prenatal examination (procedure)",
+            display_name="Routine Antenatal Care (ANC)",
+            mts_discriminator="ROUTINE_CARE",
+            default_tier="GREEN",
+            aliases=["antenatal checkup", "anc visit", "pregnancy routine", "duban ciki", "ile-iwosan oyun", "routine antenatal", "pregnancy supplements"]
+        ),
+
         # YELLOW / URGENT CONCEPTS
         SNOMEDConcept(
             concept_id="386661006",
